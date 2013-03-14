@@ -57,6 +57,8 @@
 	<string name="lbl_AndroidVer">バージョン</string>
 	<string name="lbl_BaseVer">ベースバンド</string>
 	
+	<string name="tabmenu_data">/data/app</string>
+	<string name="tabmenu_system">/system/app</string>
 	<string name="btn_AppList">アプリケーション凍結</string>
 	<string name="AppWaitAction">読込中。。。</string>
     <string name="ActionDefAppDisable">アプリケーションの凍結をします</string>

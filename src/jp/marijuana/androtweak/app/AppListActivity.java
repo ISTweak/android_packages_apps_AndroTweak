@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jp.marijuana.androtweak.app.AppPagerAdapter;
 import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
 
@@ -18,6 +19,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +32,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -38,8 +42,11 @@ import android.graphics.drawable.Drawable;
 public class AppListActivity extends Activity implements Runnable
 {
 	private static AppListActivity my;
+	private ViewPager PagerLayout;
+	private LinearLayout AppListLayout;
 	
-	private LinearLayout layout;
+	public static LinearLayout dataLayout;
+	public static LinearLayout systemLayout;
 	
 	private static ProgressDialog waitDialog;
 	private Thread thread;
@@ -52,17 +59,53 @@ public class AppListActivity extends Activity implements Runnable
 	private final int blue = Color.rgb(0, 0, 255);
 	public static String AppDir = "";
 	
+	private final String datadir = "/data/app";
+	private final String systemdir = "/system/app";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		my = this;
 		super.onCreate(savedInstanceState);
-		layout = new LinearLayout(this);
-		layout.setOrientation(LinearLayout.VERTICAL);
-		setContentView(layout);
+		AppListLayout = new LinearLayout(this);
+		AppListLayout.setOrientation(LinearLayout.VERTICAL);
+		setContentView(AppListLayout);
 		
-		makeHeader();
+		makePage();
 		ShowWait();
+	}
+	
+	private void makePage()
+	{
+		dataLayout = new LinearLayout(this);
+		dataLayout.setOrientation(LinearLayout.VERTICAL);
+		systemLayout = new LinearLayout(this);
+		systemLayout.setOrientation(LinearLayout.VERTICAL);
+		
+		PagerLayout = new ViewPager(this);
+		PagerLayout.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				makeMainHead(position);
+			}
+		});
+		PagerAdapter mPagerAdapter = new AppPagerAdapter();
+		PagerLayout.setAdapter(mPagerAdapter);
+		
+		makeMainHead(0);
+	}
+	
+	private void makeMainHead(int position)
+	{
+		AppListLayout.removeAllViews();
+		
+		LinearLayout HeadTab = new LinearLayout(this);
+		HeadTab.addView(makeHeadText(R.string.tabmenu_data, 0, (position == 0)));
+		HeadTab.addView(makeHeadText(R.string.tabmenu_system, 1, (position == 1)));
+		
+		AppListLayout.addView(HeadTab);
+		makeHeader();
+		AppListLayout.addView(PagerLayout);
 	}
 	
 	private void makeHeader()
@@ -78,9 +121,39 @@ public class AppListActivity extends Activity implements Runnable
 		body.addView(dsc);
 		body.addView(dsc2);
 		
-		layout.addView(body);
+		AppListLayout.addView(body);
 	}
 	
+	private TextView makeHeadText(int text, final int item, Boolean enable)
+	{
+		LinearLayout.LayoutParams lParam = new TableRow.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		lParam.weight = 1;
+		lParam.setMargins(1, 5, 1, 10);
+		
+		TextView txtV = new TextView(this);
+		txtV.setText(text);
+		txtV.setLayoutParams(lParam);
+		txtV.setPadding(1, 10, 1, 10);
+		txtV.setGravity(Gravity.CENTER);
+		if ( enable ) {
+			txtV.setBackgroundColor(Color.LTGRAY);
+			txtV.setTextColor(Color.BLACK);
+		} else {
+			txtV.setBackgroundColor(Color.DKGRAY);
+			txtV.setTextColor(Color.GRAY);
+			txtV.setClickable(true);
+			txtV.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v)
+				{
+					PagerLayout.setCurrentItem(item);
+				}
+			});
+		}
+		
+		return txtV;
+	}
+
 	private void makeBotom()
 	{
 		Button btncl = new Button(this);
@@ -95,7 +168,24 @@ public class AppListActivity extends Activity implements Runnable
 		tray.setGravity(Gravity.LEFT|Gravity.BOTTOM);
 		tray.addView(btncl);
 		
-		layout.addView(tray);
+		dataLayout.addView(makeTray());
+		systemLayout.addView(makeTray());
+	}
+	
+	private LinearLayout makeTray()
+	{
+		Button btncl = new Button(this);
+		btncl.setText(R.string.btn_Close);
+		btncl.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		LinearLayout tray = new LinearLayout(this);
+		tray.setGravity(Gravity.LEFT|Gravity.BOTTOM);
+		tray.addView(btncl);
+		return tray;
 	}
 	
 	@Override
@@ -183,29 +273,12 @@ public class AppListActivity extends Activity implements Runnable
 		}
 	}
 	
-	private List<ApplicationInfo> ApplicationArray()
+	private void setListView(List<ApplicationInfo> listApps, LinearLayout layout)
 	{
-		pm = this.getPackageManager();
-		int l = AppDir.length();
-		List<ApplicationInfo> list = pm.getInstalledApplications(0);
-		//アプリケーションをsystem/app内のみにしてソート
-		List<ApplicationInfo> LApps = new ArrayList<ApplicationInfo>();
-		for (ApplicationInfo ai : list) {
-			if ( ai.publicSourceDir.substring(0, l).equals(AppDir) ) {
-				LApps.add(ai);
-			}
-		}
-		Collections.sort(LApps, new ApplicationInfo.DisplayNameComparator(pm));
-		return LApps;
-	}
-	
-	private void getAppList()
-	{
-		List<ApplicationInfo> LApps = ApplicationArray();
 		ListView lv = new ListView(this);
 		
 		myA = new MyAdapter<ListData>(this, R.layout.applist_tray, new ArrayList<ListData>());
-		for (ApplicationInfo lapp : LApps) {
+		for (ApplicationInfo lapp : listApps) {
 			if (pm.getApplicationEnabledSetting(lapp.packageName)== 2) {
 				myA.add(new ListData(lapp.loadIcon(pm), lapp.loadLabel(pm).toString(), lapp.packageName, blue));
 			} else {
@@ -214,20 +287,41 @@ public class AppListActivity extends Activity implements Runnable
 		}
 		lv.setAdapter(myA);
 		
-		// リストビューのアイテムがクリックされた時のコールバック
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 				ListView listView = (ListView) parent;
-				// アイテムの取得
 				item = (ListData)listView.getItemAtPosition(position);
 				showDialog();
 			}
 		});
+		
 		LinearLayout.LayoutParams trlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		trlp.weight = 1;
 		layout.addView(lv, trlp);
+	}
+	
+	private void getAppList()
+	{
+		pm = this.getPackageManager();
+		int l1 = datadir.length();
+		int l2 = systemdir.length();
+		List<ApplicationInfo> list = pm.getInstalledApplications(0);
+		List<ApplicationInfo> dataApps = new ArrayList<ApplicationInfo>();
+		List<ApplicationInfo> systemApps = new ArrayList<ApplicationInfo>();
+		for (ApplicationInfo ai : list) {
+			if ( ai.publicSourceDir.substring(0, l1).equals(datadir) ) {
+				dataApps.add(ai);
+			} else if ( ai.publicSourceDir.substring(0, l2).equals(systemdir) ) {
+				systemApps.add(ai);
+			}
+		}
+		Collections.sort(dataApps, new ApplicationInfo.DisplayNameComparator(pm));
+		Collections.sort(systemApps, new ApplicationInfo.DisplayNameComparator(pm));
+		
+		setListView(dataApps, dataLayout);
+		setListView(systemApps, systemLayout);
 	}
 	
 	private void showDialog()
