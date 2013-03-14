@@ -1,6 +1,8 @@
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
+gen
+bin
+/assets
+/.settings
+/.classpath
+/.project
+/.gitignore
+/lint.xml

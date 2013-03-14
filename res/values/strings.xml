@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AndroTweak</string>
+    <string name="msg_abort">This application cannot be used unless su or au is installed.</string>
+    
+    <string name="tabmenu_kernel">kernel</string>
+    <string name="tabmenu_application">application</string>
+    <string name="tabmenu_utility">utility</string>
+    
+    <string name="clockrate">Clock</string>
+	<string name="cGovernor">Scaling</string>
+	<string name="cScheduler">Scheduler</string>
+	<string name="cZramsize">Zram size</string>
+	<string name="cSwappiness">Swappiness</string>
+	<string name="btn_OverClock">OverClock</string>
+	<string name="MinClock">minimum clock</string>
+	<string name="KARA">to</string>
+	<string name="MaxClock">maximum clock</string>
+	<string name="ChkBoot">on boot</string>
+	<string name="btn_zram">Zram settings</string>
+	<string name="ZramSettings">Zram settings</string>
+    <string name="Str_Zramsize">size of Zram</string>
+    <string name="btn_vdd">VDD settings</string>
+    <string name="btn_SaveVDD">"Save settings"</string>
+    <string name="btn_DelVDD">"Delete settings"</string>
+    <string name="msg_SaveVDD">VDDの設定を保存しました</string>
+    <string name="msg_DelVDD">VDDの設定を削除しました</string>
+    
+    
+</resources>

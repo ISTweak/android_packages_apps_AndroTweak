@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">AndroTweak</string>
+	<string name="msg_abort">このアプリケーションは、suコマンドかauコマンドがインストールされていないと使用できません。</string>
+	
+	<string name="tabmenu_kernel">カーネル</string>
+	<string name="tabmenu_application">アプリ</string>
+	<string name="tabmenu_utility">ツール</string>
+	
+	<string name="clockrate">クロック</string>
+	<string name="cGovernor">スケーリング</string>
+	<string name="cScheduler">スケジューラー</string>
+	<string name="cZramsize">Zramサイズ</string>
+	<string name="cSwappiness">Swappiness</string>
+	<string name="btn_OverClock">オーバクロック</string>
+	<string name="MinClock">最小クロック</string>
+	<string name="KARA">～</string>
+	<string name="MaxClock">最大クロック</string>
+	<string name="ChkBoot">起動時有効</string>
+	<string name="btn_zram">Zramの設定</string>
+	<string name="ZramSettings">Zramの設定</string>
+    <string name="Str_Zramsize">Zramのサイズ</string>
+    <string name="btn_vdd">VDDの設定</string>
+    <string name="btn_SaveVDD">"設定を保存"</string>
+    <string name="btn_DelVDD">"設定を削除"</string>
+    <string name="msg_SaveVDD">VDDの設定を保存しました</string>
+    <string name="msg_DelVDD">VDDの設定を削除しました</string>
+    <string name="msg_SaveZram">Zramは再起動後に反映されます</string>
+	
+	<string name="id_MinClock">1</string>
+	<string name="id_MaxClock">2</string>
+	<string name="id_Governor">3</string>
+	<string name="id_Scheduler">4</string>
+	<string name="id_CheckBoot">5</string>
+	<string name="id_Zram">6</string>
+	<string name="id_Swappiness">7</string>
+	
+	<string name="btn_DelSu">suコマンドを無効にします</string>
+    <string name="btn_PutSu">suコマンドを有効にします</string>
+	<string name="EnableSu">suコマンドが有効になりました</string>
+    <string name="DisableSu">suコマンドを無効にしました</string>
+    <string name="EnableSuSubject">suコマンドが有効です</string>
+    <string name="EnableSuDesc">一部のアプリケーションで「不正な～」が出る場合があります</string>
+    <string name="widget_desc">suの状態</string>
+    <string name="btn_Reboot">再起動</string>
+    <string name="RebootNormal">Boot</string>
+	<string name="RebootRecovery">Recovery</string>
+	<string name="RebootMode">再起動モード</string>
+	<string name="btn_CacheClear">キャッシュクリア</string>
+	<string name="CACHE_CLEAR">キャッシュクリア</string>
+    <string name="CACHE_CLEAR_DESC">/data/cacheと/data/dalvik-cacheをクリアします</string>
+    <string name="btn_CLEAR">クリア</string>
+	<string name="btn_Tethering">テザリング有効化</string>
+	<string name="lbl_Carrier">キャリア</string>
+	<string name="lbl_Maker">メーカー</string>
+	<string name="lbl_Model">機種</string>
+	<string name="lbl_AndroidVer">バージョン</string>
+	<string name="lbl_BaseVer">ベースバンド</string>
+	
+	<string name="btn_AppList">アプリケーション凍結</string>
+	<string name="AppWaitAction">読込中。。。</string>
+    <string name="ActionDefAppDisable">アプリケーションの凍結をします</string>
+    <string name="ActionDefAppDesc">青字＝無効／白字＝有効</string>
+    <string name="ToDelete">を無効にしますか？</string>
+    <string name="ToReturn">を有効にしますか？</string>
+    <string name="DeleteConfirm">確認</string>
+    <string name="EnableAction">有効にする</string>
+    <string name="DisableAction">無効にする</string>
+	<string name="SelectDirTittle">ディレクトリ選択</string>
+	<string name="btn_Market">マーケット偽装</string>
+	<string name="btn_MarketRe">マーケット偽装解除</string>
+	<string name="btn_LifeLogTri">LifeLog無効にする</string>
+    <string name="btn_LifeLogRec">LifeLog有効にする</string>
+    <string name="lbl_datasize">/data 全容量</string>
+    <string name="lbl_datause">/data 使用量</string>
+    <string name="lbl_dataempty">/data 空容量</string>
+    <string name="lbl_dataapp">/data/app 容量</string>
+    <string name="lbl_datadata">/data/data 容量</string>
+    
+	<string name="btn_Execute">設定する</string>
+	<string name="btn_Close">閉じる</string>
+	<string name="SettingEnd">設定しました。</string>
+	<string name="SettingDelete">設定を削除する</string>
+	<string name="btn_Cancel">キャンセル</string>
+	<string name="msg_Loading">設定中。。。</string>
+	
+	<string name="menu_Close">終了</string>
+	<string name="menu_Update">バイナリ更新</string>
+	
+</resources>
