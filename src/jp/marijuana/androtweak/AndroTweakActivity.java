@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,7 +62,7 @@ public class AndroTweakActivity extends Activity
 	
 	private TextView makeHeadText(int text, final int item, Boolean enable)
 	{
-		LinearLayout.LayoutParams lParam = new TableRow.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams lParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lParam.weight = 1;
 		lParam.setMargins(1, 5, 1, 10);
 		

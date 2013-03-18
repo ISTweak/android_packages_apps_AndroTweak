@@ -59,9 +59,9 @@
 	
 	<string name="tabmenu_data">/data/app</string>
 	<string name="tabmenu_system">/system/app</string>
-	<string name="btn_AppList">アプリケーション凍結</string>
+	<string name="btn_AppList">アプリケーション管理</string>
 	<string name="AppWaitAction">読込中。。。</string>
-    <string name="ActionDefAppDisable">アプリケーションの凍結をします</string>
+    <string name="ActionDefAppDisable">アプリケーションの管理をします</string>
     <string name="ActionDefAppDesc">青字＝無効／白字＝有効</string>
     <string name="ToDelete">を無効にしますか？</string>
     <string name="ToReturn">を有効にしますか？</string>
@@ -69,8 +69,8 @@
     <string name="EnableAction">有効にする</string>
     <string name="DisableAction">無効にする</string>
 	<string name="SelectDirTittle">ディレクトリ選択</string>
-	<string name="btn_Market">マーケット偽装</string>
-	<string name="btn_MarketRe">マーケット偽装解除</string>
+	<string name="btn_Market">マーケットデバッグ有効にする</string>
+	<string name="btn_MarketRe">マーケットデバッグ無効にする</string>
 	<string name="btn_LifeLogTri">LifeLog無効にする</string>
     <string name="btn_LifeLogRec">LifeLog有効にする</string>
     <string name="lbl_datasize">/data 全容量</string>
@@ -78,13 +78,19 @@
     <string name="lbl_dataempty">/data 空容量</string>
     <string name="lbl_dataapp">/data/app 容量</string>
     <string name="lbl_datadata">/data/data 容量</string>
-    
+    <string name="lbl_version">バージョン</string>
+    <string name="btn_Details">詳細</string>
+    <string name="btn_Reinstall">再インストール</string>
+    <string name="lbl_permission">パーミッション</string>
+    <string name="btn_permdel">パーミッション削除</string>
+
 	<string name="btn_Execute">設定する</string>
 	<string name="btn_Close">閉じる</string>
 	<string name="SettingEnd">設定しました。</string>
 	<string name="SettingDelete">設定を削除する</string>
 	<string name="btn_Cancel">キャンセル</string>
 	<string name="msg_Loading">設定中。。。</string>
+	<string name="msg_Executing">実行中。。。</string>
 	
 	<string name="menu_Close">終了</string>
 	<string name="menu_Update">バイナリ更新</string>

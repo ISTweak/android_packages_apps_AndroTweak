@@ -8,14 +8,12 @@ import java.util.Collections;
 import java.util.List;
 
 import jp.marijuana.androtweak.app.AppPagerAdapter;
-import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,7 +42,6 @@ public class AppListActivity extends Activity implements Runnable
 	private static AppListActivity my;
 	private ViewPager PagerLayout;
 	private LinearLayout AppListLayout;
-	
 	public static LinearLayout dataLayout;
 	public static LinearLayout systemLayout;
 	
@@ -52,16 +49,21 @@ public class AppListActivity extends Activity implements Runnable
 	private Thread thread;
 	
 	public PackageManager pm;
-	public MyAdapter<ListData> myA;
-	public ListData item;
+	public static ListData item;
+
+	@SuppressWarnings("rawtypes")
+	private List<MyAdapter> ListAdp = new ArrayList<MyAdapter>();
 	
 	private final int white = Color.rgb(255, 255, 255);
 	private final int blue = Color.rgb(0, 0, 255);
-	public static String AppDir = "";
-	
 	private final String datadir = "/data/app";
 	private final String systemdir = "/system/app";
+	private final int FP = ViewGroup.LayoutParams.FILL_PARENT;
+	private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 	
+	private int SelPosition = -1;
+	private final int LVData = 0;
+	private final int LVSystem = 1;
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -70,11 +72,30 @@ public class AppListActivity extends Activity implements Runnable
 		AppListLayout = new LinearLayout(this);
 		AppListLayout.setOrientation(LinearLayout.VERTICAL);
 		setContentView(AppListLayout);
-		
+
 		makePage();
 		ShowWait();
 	}
 	
+    @Override  
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        @SuppressWarnings("unchecked")
+		MyAdapter<ListData> myA = ListAdp.get(requestCode);
+       	if (resultCode != 2) {
+       		item.txtColor = white;
+       		item.tv.setTextColor(white);
+       		myA.ChangColor(SelPosition, white);
+       	} else {
+       		item.txtColor = blue;
+       		item.tv.setTextColor(blue);
+       		myA.ChangColor(SelPosition, blue);
+       	}
+       	myA.notifyDataSetChanged();
+    }
+    
 	private void makePage()
 	{
 		dataLayout = new LinearLayout(this);
@@ -126,7 +147,7 @@ public class AppListActivity extends Activity implements Runnable
 	
 	private TextView makeHeadText(int text, final int item, Boolean enable)
 	{
-		LinearLayout.LayoutParams lParam = new TableRow.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams lParam = new TableRow.LayoutParams(FP, WC);
 		lParam.weight = 1;
 		lParam.setMargins(1, 5, 1, 10);
 		
@@ -156,18 +177,6 @@ public class AppListActivity extends Activity implements Runnable
 
 	private void makeBotom()
 	{
-		Button btncl = new Button(this);
-		btncl.setText(R.string.btn_Close);
-		btncl.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-		LinearLayout tray = new LinearLayout(this);
-		tray.setGravity(Gravity.LEFT|Gravity.BOTTOM);
-		tray.addView(btncl);
-		
 		dataLayout.addView(makeTray());
 		systemLayout.addView(makeTray());
 	}
@@ -219,7 +228,7 @@ public class AppListActivity extends Activity implements Runnable
 		}
 	};
 	
-	private class MyAdapter<T extends ListData> extends ArrayAdapter<T>
+	public class MyAdapter<T extends ListData> extends ArrayAdapter<T>
 	{
 		private ArrayList<T> items;
 		private LayoutInflater inflater;
@@ -234,7 +243,7 @@ public class AppListActivity extends Activity implements Runnable
 		}
 		
 		@Override
-		public View getView(int position,View convertView, ViewGroup parent)
+		public View getView(int position, View convertView, ViewGroup parent)
 		{
 			View view;
 			if (convertView == null) {
@@ -253,6 +262,13 @@ public class AppListActivity extends Activity implements Runnable
 				bT.setText(item.bodyText);
 			}
 			return view;
+		}
+		
+		public void ChangColor(int position, int color)
+		{
+			T item = items.get(position);
+			item.txtColor = color;
+			item.tv.setTextColor(item.txtColor);
 		}
 	}
 
@@ -273,11 +289,11 @@ public class AppListActivity extends Activity implements Runnable
 		}
 	}
 	
-	private void setListView(List<ApplicationInfo> listApps, LinearLayout layout)
+	private void setListView(List<ApplicationInfo> listApps, LinearLayout layout, final int lvposition)
 	{
 		ListView lv = new ListView(this);
-		
-		myA = new MyAdapter<ListData>(this, R.layout.applist_tray, new ArrayList<ListData>());
+
+		MyAdapter<ListData>  myA = new MyAdapter<ListData>(this, R.layout.applist_tray, new ArrayList<ListData>());
 		for (ApplicationInfo lapp : listApps) {
 			if (pm.getApplicationEnabledSetting(lapp.packageName)== 2) {
 				myA.add(new ListData(lapp.loadIcon(pm), lapp.loadLabel(pm).toString(), lapp.packageName, blue));
@@ -286,18 +302,22 @@ public class AppListActivity extends Activity implements Runnable
 			}
 		}
 		lv.setAdapter(myA);
-		
+		ListAdp.add(lvposition, myA);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 				ListView listView = (ListView) parent;
 				item = (ListData)listView.getItemAtPosition(position);
-				showDialog();
+				SelPosition = position;
+				Intent intent = new Intent();
+				intent.setClassName("jp.marijuana.androtweak", "jp.marijuana.androtweak.app.AppDetailsActivity");
+				intent.putExtra("appName", item.bodyText);
+				startActivityForResult(intent, lvposition);
 			}
 		});
 		
-		LinearLayout.LayoutParams trlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams trlp = new LinearLayout.LayoutParams(FP, WC);
 		trlp.weight = 1;
 		layout.addView(lv, trlp);
 	}
@@ -320,60 +340,8 @@ public class AppListActivity extends Activity implements Runnable
 		Collections.sort(dataApps, new ApplicationInfo.DisplayNameComparator(pm));
 		Collections.sort(systemApps, new ApplicationInfo.DisplayNameComparator(pm));
 		
-		setListView(dataApps, dataLayout);
-		setListView(systemApps, systemLayout);
-	}
-	
-	private void showDialog()
-	{
-		AlertDialog.Builder alert = new AlertDialog.Builder(AppListActivity.this); 
-		alert.setTitle(item.headerText);
-		alert.setIcon(item.icon);
-		
-		if (pm.getApplicationEnabledSetting(item.bodyText)!= 2) {
-			//無効ボタン
-			alert.setMessage(item.bodyText + getString(R.string.ToDelete));
-			alert.setPositiveButton(R.string.DisableAction, getListener(0));
-		} else if (pm.getApplicationEnabledSetting(item.bodyText)== 2) {
-			//有効ボタン
-			alert.setMessage(item.bodyText + getString(R.string.ToReturn));
-			alert.setPositiveButton(R.string.EnableAction, getListener(1));
-		}
-		//キャンセルボタン
-		alert.setNegativeButton(R.string.btn_Cancel, getListener(9));
-		alert.show();
-	}
-	
-	private DialogInterface.OnClickListener getListener(int type)
-	{
-		DialogInterface.OnClickListener ocl = null;
-		switch (type) {
-		case 0:
-			ocl = new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					item.txtColor = blue;
-					item.tv.setTextColor(blue);
-					NativeCmd.ExecuteCmdAlert(AppListActivity.this, "pm disable " + item.bodyText, true);
-				}
-			};
-			break;
-		case 1:
-			ocl = new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					item.txtColor = white;
-					item.tv.setTextColor(white);
-					NativeCmd.ExecuteCmdAlert(AppListActivity.this, "pm enable " + item.bodyText, true);
-				}
-			};
-			break;
-		default:
-			ocl = null;
-			break;
-		}
-		
-		return ocl;
+		setListView(dataApps, dataLayout, LVData);
+		setListView(systemApps, systemLayout, LVSystem);
 	}
 }
 
