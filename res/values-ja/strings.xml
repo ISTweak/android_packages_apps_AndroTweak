@@ -83,6 +83,7 @@
     <string name="btn_Reinstall">再インストール</string>
     <string name="lbl_permission">パーミッション</string>
     <string name="btn_permdel">パーミッション削除</string>
+    <string name="str_apperror">アプリケーションを読み込めません</string>
 
 	<string name="btn_Execute">設定する</string>
 	<string name="btn_Close">閉じる</string>

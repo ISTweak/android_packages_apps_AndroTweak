@@ -102,6 +102,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 				intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
 				intent.setData(Uri.parse("package:" + appName));
 				startActivity(intent);
+				finish();
 			}
 		});
 		llh.addView(btnd);
@@ -190,6 +191,24 @@ public class AppDetailsActivity  extends Activity implements Runnable
 		AppLayout.addView(tvp);
 	}
 	
+	private void makeError()
+	{
+		TextView tv = new TextView(this);
+		tv.setText(R.string.str_apperror);
+		AppLayout.addView(tv);
+		
+		Button btncl = new Button(this);
+		btncl.setText(R.string.btn_Close);
+		btncl.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				setResult(1);
+				finish();
+			}
+		});
+		AppLayout.addView(btncl);
+	}
+	
 	private void makeAppInfo()
 	{
 		AppLayout.removeAllViews();
@@ -201,11 +220,13 @@ public class AppDetailsActivity  extends Activity implements Runnable
 			ai = pm.getApplicationInfo(appName, PackageManager.GET_META_DATA);
 			pi = pm.getPackageInfo(appName, PackageManager.GET_ACTIVITIES);
 		} catch (NameNotFoundException e1) {
-			e1.printStackTrace();
+			Log.e(TAG, e1.toString());
+			makeError();
 			return;
 		}
 		
-		makeHead(ai.loadLabel(pm).toString(), getString(R.string.lbl_version) + pi.versionName, pm.getApplicationIcon(ai));
+		String version = getString(R.string.lbl_version) + pi.versionName + " (uid:" + ai.uid + ")";
+		makeHead(ai.loadLabel(pm).toString(), version, pm.getApplicationIcon(ai));
 		makeButton(pm.getApplicationEnabledSetting(appName));
 
 		Boolean bolList = true;
@@ -284,7 +305,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 		btncl.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				setResult(getPackageManager().getApplicationEnabledSetting(appName));
+				setResult(0);
 				finish();
 			}
 		});
@@ -446,7 +467,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 	private ArrayList<String> ReadPermission()
 	{
 		ArrayList<String> array = new ArrayList<String>();
-		NativeCmd.ExecCommand("cp /data/system/packages.xml /data/data/jp.marijuana.androtweak/files/packages.xml",  false);
+		NativeCmd.ExecCommand("cat /data/system/packages.xml > /data/data/jp.marijuana.androtweak/files/packages.xml",  false);
 		String readString = "";
 		try {
 			FileInputStream  fileInputStream = my.openFileInput("packages.xml");

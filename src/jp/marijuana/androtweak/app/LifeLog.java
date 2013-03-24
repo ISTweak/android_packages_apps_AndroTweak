@@ -2,13 +2,11 @@ package jp.marijuana.androtweak.app;
 
 import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-@SuppressLint("HandlerLeak")
 public class LifeLog
 {
 	private Context ctx;

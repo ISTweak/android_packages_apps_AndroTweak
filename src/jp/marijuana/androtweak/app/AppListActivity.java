@@ -78,23 +78,32 @@ public class AppListActivity extends Activity implements Runnable
 	}
 	
     @Override  
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
-    {
-        super.onActivityResult(requestCode, resultCode, intent);
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		super.onActivityResult(requestCode, resultCode, intent);
 
-        @SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
 		MyAdapter<ListData> myA = ListAdp.get(requestCode);
-       	if (resultCode != 2) {
-       		item.txtColor = white;
-       		item.tv.setTextColor(white);
-       		myA.ChangColor(SelPosition, white);
-       	} else {
-       		item.txtColor = blue;
-       		item.tv.setTextColor(blue);
-       		myA.ChangColor(SelPosition, blue);
-       	}
-       	myA.notifyDataSetChanged();
-    }
+		switch(resultCode) {
+		case 0:	
+			if ( getPackageManager().getApplicationEnabledSetting(item.bodyText) == 2 ) {
+				item.txtColor = blue;
+				item.tv.setTextColor(blue);
+				myA.ChangColor(SelPosition, blue);
+			} else {
+				item.txtColor = white;
+				item.tv.setTextColor(white);
+				myA.ChangColor(SelPosition, white);
+			}
+			myA.notifyDataSetChanged();
+			break;
+		case 1:	
+			makePage();
+			ShowWait();
+			break;
+		}
+	}
+
     
 	private void makePage()
 	{
@@ -291,6 +300,7 @@ public class AppListActivity extends Activity implements Runnable
 	
 	private void setListView(List<ApplicationInfo> listApps, LinearLayout layout, final int lvposition)
 	{
+		layout.removeAllViews();
 		ListView lv = new ListView(this);
 
 		MyAdapter<ListData>  myA = new MyAdapter<ListData>(this, R.layout.applist_tray, new ArrayList<ListData>());
