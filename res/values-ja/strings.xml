@@ -51,11 +51,14 @@
     <string name="CACHE_CLEAR_DESC">/data/cacheと/data/dalvik-cacheをクリアします</string>
     <string name="btn_CLEAR">クリア</string>
 	<string name="btn_Tethering">テザリング有効化</string>
+	<string name="btn_AdbPortOn">Adb Wifi</string>
+	<string name="btn_AdbPortOff">Adb USB</string>
 	<string name="lbl_Carrier">キャリア</string>
 	<string name="lbl_Maker">メーカー</string>
 	<string name="lbl_Model">機種</string>
 	<string name="lbl_AndroidVer">バージョン</string>
 	<string name="lbl_BaseVer">ベースバンド</string>
+	<string name="lbl_IpAddress">IPアドレス</string>
 	
 	<string name="tabmenu_data">/data/app</string>
 	<string name="tabmenu_system">/system/app</string>

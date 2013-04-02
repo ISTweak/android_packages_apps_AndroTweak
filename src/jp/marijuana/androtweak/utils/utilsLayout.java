@@ -13,6 +13,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -71,11 +72,13 @@ public class utilsLayout implements Runnable
 		}
 		AndroTweakActivity.Model = Model;
 		
-		String[] p = new String[4];
+		String[] p = new String[5];
 		p[0] = NativeCmd.getProperties("ro.product.brand");
 		p[1] = NativeCmd.getProperties("ro.product.manufacturer");
 		p[2] = NativeCmd.getProperties("ro.build.version.release");
 		p[3] = NativeCmd.getProperties("gsm.version.baseband");
+		String wlan = NativeCmd.getProperties("wifi.interface");
+		p[4] = NativeCmd.getProperties("dhcp." + wlan + ".ipaddress");
 		
 		
 		tb = new TableLayout(ctx);
@@ -86,6 +89,7 @@ public class utilsLayout implements Runnable
 		setTableRow(R.string.lbl_Model, Model);
 		setTableRow(R.string.lbl_AndroidVer, p[2]);
 		setTableRow(R.string.lbl_BaseVer, p[3]);
+		setTableRow(R.string.lbl_IpAddress, p[4]);
 
  		layout.addView(tb);
 	}
@@ -118,6 +122,7 @@ public class utilsLayout implements Runnable
 		if ( TetheringCmd.length() > 0 ) {
 			layout.addView(makeTethering());
 		}
+		layout.addView(makeAdbBtn());
 	}
 	
 	private Button makeSuBtn()
@@ -145,6 +150,45 @@ public class utilsLayout implements Runnable
 			});
 		}
 		return btnsu;
+	}
+	
+	private Button makeAdbBtn()
+	{
+		WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		int wifiState = wifiManager.getWifiState();
+		String port = NativeCmd.getProperties("service.adb.tcp.port").trim();
+		Button btnadb = new Button(ctx);
+		if (wifiState == WifiManager.WIFI_STATE_ENABLED && port.length() == 0) {
+			btnadb.setText(R.string.btn_AdbPortOn);
+			btnadb.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String[] cmds = new String[3];
+					cmds[0] = "setprop service.adb.tcp.port 5555";
+					cmds[1] = "stop adbd";
+					cmds[2] = "start adbd";
+					NativeCmd.ExecuteCommands(cmds, true);
+					ShowWait();
+				}
+			});
+		} else if( port.length() == 0 ) {
+			btnadb.setText(R.string.btn_AdbPortOn);
+			btnadb.setEnabled(false);
+		} else {
+			btnadb.setText(R.string.btn_AdbPortOff);
+			btnadb.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String[] cmds = new String[3];
+					cmds[0] = "setprop service.adb.tcp.port ''";
+					cmds[1] = "stop adbd";
+					cmds[2] = "start adbd";
+					NativeCmd.ExecuteCommands(cmds, true);
+					ShowWait();
+				}
+			});
+		}
+		return btnadb;
 	}
 	
 	private Button makeTethering()
