@@ -36,7 +36,7 @@ public class AndroTweakActivity extends Activity
 	public static utilsLayout uLayout;
 	public static appLayout aLayout;
 	public static kernelLayout kLayout;
-	
+
 	private static final int MENUID_MENU1 = (Menu.FIRST + 1);
 	private static final int MENUID_MENU2 = (Menu.FIRST + 2);
 	

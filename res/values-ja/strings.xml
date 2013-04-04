@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">AndroTweak</string>
+	<string name="lbl_rootswitch">Root Switch</string>
+	<string name="lbl_adbswitch">ADB Switch</string>
 	<string name="msg_abort">このアプリケーションは、suコマンドかauコマンドがインストールされていないと使用できません。</string>
 	
 	<string name="tabmenu_kernel">カーネル</string>

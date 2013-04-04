@@ -1,5 +1,6 @@
 package jp.marijuana.androtweak.utils;
 
+import jp.marijuana.androtweak.AdbSwitchWidgetProvider;
 import jp.marijuana.androtweak.AndroTweakActivity;
 import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
@@ -13,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
@@ -77,10 +79,7 @@ public class utilsLayout implements Runnable
 		p[1] = NativeCmd.getProperties("ro.product.manufacturer");
 		p[2] = NativeCmd.getProperties("ro.build.version.release");
 		p[3] = NativeCmd.getProperties("gsm.version.baseband");
-		String wlan = NativeCmd.getProperties("wifi.interface");
-		p[4] = NativeCmd.getProperties("dhcp." + wlan + ".ipaddress");
-		
-		
+
 		tb = new TableLayout(ctx);
 		tb.setOrientation(TableLayout.VERTICAL);
 		
@@ -89,10 +88,21 @@ public class utilsLayout implements Runnable
 		setTableRow(R.string.lbl_Model, Model);
 		setTableRow(R.string.lbl_AndroidVer, p[2]);
 		setTableRow(R.string.lbl_BaseVer, p[3]);
-		setTableRow(R.string.lbl_IpAddress, p[4]);
+		setTableRow(R.string.lbl_IpAddress, getIpAddress());
 
  		layout.addView(tb);
 	}
+	
+	private String getIpAddress()
+	{
+		WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+		int ip = wifiInfo.getIpAddress();
+		String ipString = (ip & 0xff) + "." + (ip >> 8 & 0xff) + "." + (ip >> 16 & 0xff) + "." + (ip >> 24 & 0xff);
+		Log.i(TAG, ipString);
+		return ipString;
+	}
+	
 	
 	private void setTableRow(int lbl, String str)
 	{
@@ -151,43 +161,51 @@ public class utilsLayout implements Runnable
 		}
 		return btnsu;
 	}
+	public static void DoAdbChange(Context ctx, Boolean wifi)
+	{
+		String[] cmds = new String[3];
+		if (wifi) {
+			cmds[0] = "setprop service.adb.tcp.port 5555";
+		} else {
+			cmds[0] = "setprop service.adb.tcp.port ''";
+		}
+		cmds[1] = "stop adbd";
+		cmds[2] = "start adbd";
+		NativeCmd.ExecuteCommands(cmds, true);
+	}
 	
 	private Button makeAdbBtn()
 	{
-		WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
-		int wifiState = wifiManager.getWifiState();
-		String port = NativeCmd.getProperties("service.adb.tcp.port").trim();
 		Button btnadb = new Button(ctx);
-		if (wifiState == WifiManager.WIFI_STATE_ENABLED && port.length() == 0) {
+		
+		switch ( adbType(ctx) ) {
+		case 1:
 			btnadb.setText(R.string.btn_AdbPortOn);
 			btnadb.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					String[] cmds = new String[3];
-					cmds[0] = "setprop service.adb.tcp.port 5555";
-					cmds[1] = "stop adbd";
-					cmds[2] = "start adbd";
-					NativeCmd.ExecuteCommands(cmds, true);
+					DoAdbChange(ctx, true);
+					AdbUpdateWidget();
 					ShowWait();
 				}
 			});
-		} else if( port.length() == 0 ) {
-			btnadb.setText(R.string.btn_AdbPortOn);
-			btnadb.setEnabled(false);
-		} else {
+			break;
+		case 2:
 			btnadb.setText(R.string.btn_AdbPortOff);
 			btnadb.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					String[] cmds = new String[3];
-					cmds[0] = "setprop service.adb.tcp.port ''";
-					cmds[1] = "stop adbd";
-					cmds[2] = "start adbd";
-					NativeCmd.ExecuteCommands(cmds, true);
+					DoAdbChange(ctx, false);
+					AdbUpdateWidget();
 					ShowWait();
 				}
 			});
+			break;
+		default:
+			btnadb.setText(R.string.btn_AdbPortOn);
+			btnadb.setEnabled(false);
 		}
+
 		return btnadb;
 	}
 	
@@ -222,7 +240,7 @@ public class utilsLayout implements Runnable
 	
 	private void UpdateWidget()
 	{
-		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.widget);
+		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.root_widget);
 		WidgetUpdate(ctx.getApplicationContext(), remoteViews);
 	}
 	
@@ -238,7 +256,7 @@ public class utilsLayout implements Runnable
 		} else {
 			imgid = R.drawable.widget_blank;
 		}
-		rViews.setImageViewResource(R.id.ImageView01, imgid);
+		rViews.setImageViewResource(R.id.rootwidget_icon, imgid);
 		ComponentName thisWidget = new ComponentName(ctx, RootSwitchWidgetProvider.class);
 		AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
 		manager.updateAppWidget(thisWidget, rViews);
@@ -259,6 +277,48 @@ public class utilsLayout implements Runnable
 		} else {
 			manager.cancel(R.string.app_name);
 		}
+	}
+	
+	private void AdbUpdateWidget()
+	{
+		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.adb_widget);
+		AdbWidgetUpdate(ctx.getApplicationContext(), remoteViews);
+	}
+	
+	public static void AdbWidgetUpdate(Context ctx, RemoteViews rViews)
+	{
+		int imgid;
+		switch ( adbType(ctx) ) {
+		case 1:
+			Log.d(TAG, "USB");
+			imgid = R.drawable.adbusb;
+			break;
+		case 2:
+			Log.d(TAG, "Wifi");
+			imgid = R.drawable.adbwifi;
+			break;
+		default:
+			imgid = R.drawable.adboff;
+		}
+
+		rViews.setImageViewResource(R.id.adbwidget_icon, imgid);
+		ComponentName thisWidget = new ComponentName(ctx, AdbSwitchWidgetProvider.class);
+		AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
+		manager.updateAppWidget(thisWidget, rViews);
+	}
+	
+	public static int adbType(Context ctx)
+	{
+		WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		int wifiState = wifiManager.getWifiState();
+		String port = NativeCmd.getProperties("service.adb.tcp.port");
+		
+		if (wifiState == WifiManager.WIFI_STATE_ENABLED && port.length() == 0) {
+			return 1;
+		} else if( port.length() == 0 ) {
+			return 0;
+		}
+		return 2;
 	}
 	
 	@Override

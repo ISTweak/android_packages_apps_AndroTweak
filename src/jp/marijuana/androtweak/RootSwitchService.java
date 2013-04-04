@@ -23,8 +23,8 @@ public class RootSwitchService extends Service
 		Intent buttonIntent = new Intent();
 		buttonIntent.setAction(MSG_CHANGE);
 		PendingIntent pendingIntent = PendingIntent.getService(this, 0, buttonIntent, 0);
-		RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget);
-		remoteViews.setOnClickPendingIntent(R.id.ImageView01, pendingIntent);
+		RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.root_widget);
+		remoteViews.setOnClickPendingIntent(R.id.rootwidget_icon, pendingIntent);
 
 		if (MSG_CHANGE.equals(intent.getAction())) {
 			if (NativeCmd.fileExists("/sbin/su") == false) {
