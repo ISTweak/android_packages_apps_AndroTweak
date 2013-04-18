@@ -53,10 +53,10 @@ public class appLayout implements Runnable
 		long total = sf.getBlockCount();
 		long avail = sf.getAvailableBlocks();
 		long all = bs * total;
-		long use  = bs * avail;
+		long emp = bs * avail;
 		double dall = all / 1024d / 1024d;
-		double duse = use / 1024d / 1024d;
-		double demp = dall - duse;
+		double demp = emp / 1024d / 1024d;
+		double duse = dall - demp;
 		DecimalFormat df = new DecimalFormat("0.00");
 		
 		double dataapp = DirectorySize(data + "/app") / 1024d;
