@@ -198,10 +198,23 @@ public class KernelUtils
 		 		BufferedReader br = new BufferedReader(fr);
 		 		String str;
 		 		int i = 0;
-		 		while ((str = br.readLine()) != null) {
-		 			vddmap.put(i , str);
-		 			i++;
-		 		}
+		 		if ( is_clock == false ) {
+		 			is_clock = true;
+			 		while ((str = br.readLine()) != null) {
+			 			String[] cl = str.split(":");
+			 			int s = Integer.parseInt(cl[0].trim()); 
+			 			String s1 = String.valueOf(s / 1000) + "MHz";
+			 			clockmap.put(s, s1);
+			 				
+			 			vddmap.put(i , str);
+			 			i++;
+			 		}
+			 	} else {
+			 		while ((str = br.readLine()) != null) {
+			 			vddmap.put(i , str);
+			 			i++;
+			 		}
+			 	}
 		 		
 		 		br.close();
 		 		fr.close();
