@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 public class OrverClockActivity extends Activity
 {
-	private final KernelUtils oc = KernelUtils.getInstance();
+	private KernelUtils oc;
 	private final TableRow.LayoutParams trlp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
 	private TableLayout layout;
 	private final String TAG = AndroTweakActivity.TAG;
@@ -40,7 +40,8 @@ public class OrverClockActivity extends Activity
 		super.onCreate(savedInstanceState);
 		layout = new TableLayout(this);
 		layout.setOrientation(TableLayout.VERTICAL);
-		
+		oc = KernelUtils.getInstance();
+
 		makeClockTray();
 		makeGovernorsTray();
 		makeSchedulerTray();

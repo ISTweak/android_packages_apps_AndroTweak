@@ -69,7 +69,7 @@ public class kernelLayout implements Runnable
 			layout.addView(makeZram());
 		}
 		
-		if (oc.is_clock) {
+		if (oc.is_vdd) {
 			layout.addView(makeVdd());
 		}
 	}

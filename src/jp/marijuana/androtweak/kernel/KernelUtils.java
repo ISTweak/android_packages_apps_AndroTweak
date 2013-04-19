@@ -18,13 +18,16 @@ import android.util.SparseArray;
 @SuppressLint("UseSparseArrays")
 public class KernelUtils
 {
+	public String vdd_levels = "/sys/devices/system/cpu/cpu0/cpufreq/vdd_levels";
+	
 	public final String scaling_min_freq = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
 	public final String scaling_max_freq = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
-	public final String vdd_levels = "/sys/devices/system/cpu/cpu0/cpufreq/vdd_levels";
+	public final String cpuinfo_min_freq = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq";	
+	public final String cpuinfo_max_freq = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
+	public final String scaling_available_frequencies = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies";
 	public final String scaling_governor = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor";
 	public final String scaling_available_governors = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors";
-	public final String cpuinfo_max_freq = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
-	public final String cpuinfo_min_freq = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq";
+	
 	public final String disksize = "/sys/block/zram0/disksize";
 	public final String swappiness = "/proc/sys/vm/swappiness";
 	public final String zramsize = "/data/root/compsize";
@@ -43,6 +46,7 @@ public class KernelUtils
 	public Boolean flg_update = true;
 	
 	public Boolean is_clock = false;
+	public Boolean is_vdd = false;
 	public Boolean is_zram = false;
 	public int def_swappiness = 0;
 	
@@ -52,6 +56,9 @@ public class KernelUtils
 	{
 		if ( !NativeCmd.fileExists(scheduler) ) {
 			scheduler = "/sys/block/mmcblk0/queue/scheduler";
+		}
+		if ( !NativeCmd.fileExists(vdd_levels) ) {
+			vdd_levels = "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels";
 		}
 		reload();
 	}
@@ -65,17 +72,18 @@ public class KernelUtils
 	{
 		if ( flg_update ) {
 			read_clock();
+			read_vdd();
 			read_scheduler();
-			readDefoults();
+			readDefaults();
 			flg_update = false;
 		}
 	}
 	
-	private void readDefoults()
+	private void readDefaults()
 	{
 		if ( is_clock ) {
-			def_maxclock = Integer.parseInt(NativeCmd.readFile(scaling_max_freq));
-			def_minclock = Integer.parseInt(NativeCmd.readFile(scaling_min_freq));
+			def_minclock = Integer.parseInt(NativeCmd.getCat(scaling_min_freq));
+			def_maxclock = Integer.parseInt(NativeCmd.getCat(scaling_max_freq));
 		}
 		
 		if (NativeCmd.fileExists(scaling_governor)) {
@@ -84,7 +92,8 @@ public class KernelUtils
 	}
 	
 	public String getClock()
-	{	
+	{
+		readDefaults();
 		String clockrate = "";
 		if ( is_clock ) {
 			clockrate = clockmap.get(def_minclock) + " - " + clockmap.get(def_maxclock);
@@ -167,10 +176,21 @@ public class KernelUtils
 		return Integer.parseInt(NativeCmd.readFile(cpuinfo_min_freq));
 	}
 	
-	/**
-	 * vdd_levelsからクロックの一覧を読み込む
-	 */
 	private void read_clock()
+	{
+		if (NativeCmd.fileExists(scaling_available_frequencies)) {
+			is_clock = true;
+			String str = NativeCmd.readFile(scaling_available_frequencies);
+			String[] freqmap = str.split(" ");
+			for ( int i = 0; i < freqmap.length; i++ ) {
+				int s = Integer.parseInt(freqmap[i].trim());
+				String s1 = String.valueOf(s / 1000) + "MHz";
+				clockmap.put(s, s1);
+			}
+		}
+	}
+	
+	private void read_vdd()
 	{
 		if (NativeCmd.fileExists(vdd_levels)) {
 		 	try {
@@ -179,17 +199,13 @@ public class KernelUtils
 		 		String str;
 		 		int i = 0;
 		 		while ((str = br.readLine()) != null) {
-		 			String[] cl = str.split(":");
-		 			int s = Integer.parseInt(cl[0].trim());
-		 			String s1 = String.valueOf(s / 1000) + "MHz";
-		 			clockmap.put(s, s1);
 		 			vddmap.put(i , str);
 		 			i++;
 		 		}
 		 		
 		 		br.close();
 		 		fr.close();
-		 		is_clock = true;
+		 		is_vdd = true;
 		 	} catch (FileNotFoundException e) {
 		 		Log.e("ISTweak", e.toString());
 		 	} catch (IOException e) {

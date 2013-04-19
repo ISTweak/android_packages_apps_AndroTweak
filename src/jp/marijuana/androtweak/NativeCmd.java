@@ -51,6 +51,7 @@ public class NativeCmd
 				while ((line = br.readLine()) != null) {
 					pw.println(line);
 				}
+				br.close();
 			} catch (IOException exception) {
 				exception.printStackTrace();
 			}
@@ -109,6 +110,7 @@ public class NativeCmd
 				cmd = cmds[i] + "\n";
 				os.write(cmd.getBytes());
 			}
+			os.flush();
 			os.close();
 			os.flush();
 			std = new ByteArrayOutputStream();
@@ -155,17 +157,22 @@ public class NativeCmd
 	 */
 	public static String getProperties(String key)
 	{
-		String line = "";
-		try {
-			Process p = Runtime.getRuntime().exec("getprop " + key);
-			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			line = input.readLine();
-			input.close();
-			p.destroy();
-		} catch (Exception err) {
-			Log.e(TAG, "none " + key);
+		String[] ret = new String[3];
+		ret = ExecCommand("getprop " + key, false);
+		if ( ret[1].length() > 0 ) {
+			return  ret[1].trim().replace("\n", "");
 		}
-		return line.trim().replace("\n", "");
+		return "";
+	}
+	
+	public static String getCat(String fn)
+	{
+		String[] ret = new String[3];
+		ret = ExecCommand("cat " + fn, false);
+		if ( ret[1].length() > 0 ) {
+			return  ret[1].trim().replace("\n", "");
+		}
+		return "";
 	}
 
 	/**
@@ -239,9 +246,10 @@ public class NativeCmd
 	{
 		String str = "";
 		try {
-			FileReader fr = new FileReader(new File(fn));
-			BufferedReader br = new BufferedReader(fr);
-			str = br.readLine();
+			final File file = new File(fn);
+			final FileReader fr = new FileReader(file);
+			final BufferedReader br = new BufferedReader(fr);
+			str = br.readLine().trim().replace("\n", "");
 			br.close();
 			fr.close();
 		} catch (FileNotFoundException e) {
@@ -249,7 +257,8 @@ public class NativeCmd
 	 	} catch (IOException e) {
 	 		Log.e(TAG, e.toString());
 	 	}
-		return str.trim().replace("\n", "");
+		
+		return str;
 	}
 
 	/**
@@ -320,7 +329,7 @@ public class NativeCmd
 
 	public static void sleep(int time)
 	{
-		try{
+		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
 			Log.d(TAG, e.toString());
