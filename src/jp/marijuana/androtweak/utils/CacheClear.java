@@ -63,14 +63,15 @@ public class CacheClear
 	
 	private void execClear()
 	{
+		NativeCmd nCmd = NativeCmd.getInstance();
 		ArrayList<String> cmds = new ArrayList<String>();
-		cmds.add(NativeCmd.cmdRm + " -rf /data/dalvik-cache/*");
-		if ( NativeCmd.fileExists("/data/bugreports/") ) {
-			cmds.add(NativeCmd.cmdRm + " -rf /data/bugreports/*");
+		cmds.add(nCmd.cmdRm + " -rf /data/dalvik-cache/*");
+		if ( nCmd.fileExists("/data/bugreports/") ) {
+			cmds.add(nCmd.cmdRm + " -rf /data/bugreports/*");
 		}
-		if ( NativeCmd.fileExists("/data/cache/") ) {
-			cmds.add(NativeCmd.cmdRm + " -rf /data/cache/*");
+		if ( nCmd.fileExists("/data/cache/") ) {
+			cmds.add(nCmd.cmdRm + " -rf /data/cache/*");
 		}
-		NativeCmd.ExecCommands(cmds.toArray(new String[0]) , true);
+		nCmd.ExecCommands(cmds.toArray(new String[0]) , true);
 	}
 }

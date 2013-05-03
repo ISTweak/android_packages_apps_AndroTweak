@@ -17,6 +17,7 @@ public class LifeLog
 	private final String db = "/ldb/ldb.db";
 	private final String dbb = "/ldb/ldbbackup.db";
 	private Button btn;
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	public static Button getButton(Context c, appLayout a)
 	{
@@ -39,8 +40,8 @@ public class LifeLog
 	
 	private void TrigerCheck()
 	{
-		String cmd = "sqlite3 " + db + " \".schema T_COMMUNICATION\"|" + NativeCmd.cmdGrep + " TRIGGER";
-		String[] line = NativeCmd.ExecCommand(cmd, true);
+		String cmd = "sqlite3 " + db + " \".schema T_COMMUNICATION\"|" + nCmd.cmdGrep + " TRIGGER";
+		String[] line = nCmd.ExecCommand(cmd, true);
 		String ret = line[1].trim().replace("\n", "");
 		if (ret.length() > 0 ) {
 			btn.setText(R.string.btn_LifeLogTri);
@@ -88,7 +89,7 @@ public class LifeLog
 		}		
 		cmd += "sqlite3 " + dbb + " \"vacuum\"\n";
 		
-		NativeCmd.ExecuteCommands(cmd.split("\n"), true);
+		nCmd.ExecuteCommands(cmd.split("\n"), true);
 	}
 	
 	private void delTriger()
@@ -106,7 +107,7 @@ public class LifeLog
 		}		
 		cmd += "sqlite3 " + dbb + " \"vacuum\"\n";
 		
-		NativeCmd.ExecuteCommands(cmd.split("\n"), true);
+		nCmd.ExecuteCommands(cmd.split("\n"), true);
 	}
 	
 	private String makeTrigger(String t)

@@ -49,15 +49,16 @@ public class KernelUtils
 	public Boolean is_vdd = false;
 	public Boolean is_zram = false;
 	public int def_swappiness = 0;
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	private static KernelUtils instance = new KernelUtils();
 	
 	private KernelUtils()
 	{
-		if ( !NativeCmd.fileExists(scheduler) ) {
+		if ( !nCmd.fileExists(scheduler) ) {
 			scheduler = "/sys/block/mmcblk0/queue/scheduler";
 		}
-		if ( !NativeCmd.fileExists(vdd_levels) ) {
+		if ( !nCmd.fileExists(vdd_levels) ) {
 			vdd_levels = "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels";
 		}
 		reload();
@@ -82,12 +83,12 @@ public class KernelUtils
 	private void readDefaults()
 	{
 		if ( is_clock ) {
-			def_minclock = Integer.parseInt(NativeCmd.getCat(scaling_min_freq));
-			def_maxclock = Integer.parseInt(NativeCmd.getCat(scaling_max_freq));
+			def_minclock = Integer.parseInt(nCmd.getCat(scaling_min_freq));
+			def_maxclock = Integer.parseInt(nCmd.getCat(scaling_max_freq));
 		}
 		
-		if (NativeCmd.fileExists(scaling_governor)) {
-			def_governor = NativeCmd.readFile(scaling_governor);
+		if (nCmd.fileExists(scaling_governor)) {
+			def_governor = nCmd.readFile(scaling_governor);
 		}
 	}
 	
@@ -114,8 +115,8 @@ public class KernelUtils
 	public String getSwappiness()
 	{
 		String swap = "";
-		if (NativeCmd.fileExists(swappiness)) {
-			swap = NativeCmd.readFile(swappiness);
+		if (nCmd.fileExists(swappiness)) {
+			swap = nCmd.readFile(swappiness);
 			def_swappiness = Integer.parseInt(swap);
 		}
 		return swap;
@@ -123,15 +124,15 @@ public class KernelUtils
 	
 	public String[] getGovernorsList()
 	{
-		String str = NativeCmd.readFile(scaling_available_governors);
+		String str = nCmd.readFile(scaling_available_governors);
 		return str.split(" ");
 	}
 	
 	public String getZramsize()
 	{
 		String strsize = "";
-		if (NativeCmd.fileExists(disksize)) {
-			int size = Integer.parseInt(NativeCmd.readFile(disksize));
+		if (nCmd.fileExists(disksize)) {
+			int size = Integer.parseInt(nCmd.readFile(disksize));
 			strsize = String.valueOf(size / 1024 /1024) + "MB";
 			is_zram = true;
 		}
@@ -141,8 +142,8 @@ public class KernelUtils
 	public int getZramSettingSize()
 	{
 		int size = 0;
-		if (NativeCmd.fileExists(zramsize)) {
-			size = Integer.parseInt(NativeCmd.readFile(zramsize))  / 1024 /1024;
+		if (nCmd.fileExists(zramsize)) {
+			size = Integer.parseInt(nCmd.readFile(zramsize))  / 1024 /1024;
 		}
 		return size;
 	}
@@ -168,19 +169,19 @@ public class KernelUtils
 	
 	public int getMaxClock()
 	{
-		return Integer.parseInt(NativeCmd.readFile(cpuinfo_max_freq));
+		return Integer.parseInt(nCmd.readFile(cpuinfo_max_freq));
 	}
 	
 	public int getMinClock()
 	{
-		return Integer.parseInt(NativeCmd.readFile(cpuinfo_min_freq));
+		return Integer.parseInt(nCmd.readFile(cpuinfo_min_freq));
 	}
 	
 	private void read_clock()
 	{
-		if (NativeCmd.fileExists(scaling_available_frequencies)) {
+		if (nCmd.fileExists(scaling_available_frequencies)) {
 			is_clock = true;
-			String str = NativeCmd.readFile(scaling_available_frequencies);
+			String str = nCmd.readFile(scaling_available_frequencies);
 			String[] freqmap = str.split(" ");
 			for ( int i = 0; i < freqmap.length; i++ ) {
 				int s = Integer.parseInt(freqmap[i].trim());
@@ -192,7 +193,7 @@ public class KernelUtils
 	
 	private void read_vdd()
 	{
-		if (NativeCmd.fileExists(vdd_levels)) {
+		if (nCmd.fileExists(vdd_levels)) {
 		 	try {
 		 		FileReader fr = new FileReader(new File(vdd_levels));
 		 		BufferedReader br = new BufferedReader(fr);
@@ -229,8 +230,8 @@ public class KernelUtils
 	
 	private void read_scheduler()
 	{
-		if ( NativeCmd.fileExists(scheduler) ) {
-			String str = NativeCmd.readFile(scheduler);
+		if ( nCmd.fileExists(scheduler) ) {
+			String str = nCmd.readFile(scheduler);
 			schedmap = str.split(" ");
 	 		for ( int i = 0; i < schedmap.length; i++ ) {
 	 			if ( schedmap[i].substring(0, 1).equals(new String("[")) ) {

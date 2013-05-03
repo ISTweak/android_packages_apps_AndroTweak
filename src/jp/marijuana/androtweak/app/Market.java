@@ -26,6 +26,7 @@ public class Market
 	private final String db = "/data/data/com.google.android.gsf/databases/gservices.db";
 	private Button btn;
 	private final String TAG = AndroTweakActivity.TAG;
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	public static Button getButton(Context c, appLayout a)
 	{
@@ -49,7 +50,7 @@ public class Market
 	private void DebugCheck()
 	{
 		String cmd = "sqlite3 " + db + " \"select value from main where name = 'finsky.debug_options_enabled';\"";
-		String[] line = NativeCmd.ExecCommand(cmd, true);
+		String[] line = nCmd.ExecCommand(cmd, true);
 		String ret = line[1].trim().replace("\n", "");
 		if (ret.length() > 0 ) {
 			btn.setText(R.string.btn_MarketRe);
@@ -86,8 +87,8 @@ public class Market
 	{
 		String[] cmds = new String[2];
 		cmds[0] = "sqlite3 " + db + " \"insert into main (name,value) values('finsky.debug_options_enabled', 'true');\"";
-		cmds[1] = NativeCmd.cmdPkill + " -9 com.android.vending";
-		NativeCmd.ExecuteCommands(cmds, true);
+		cmds[1] = nCmd.cmdPkill + " -9 com.android.vending";
+		nCmd.ExecuteCommands(cmds, true);
 
 		MakeCarrierList();
 	}
@@ -96,8 +97,8 @@ public class Market
 	{
 		String[] cmds = new String[2];
 		cmds[0] = "sqlite3 " + db + " \"delete from main where name = 'finsky.debug_options_enabled';\"";
-		cmds[1] = NativeCmd.cmdPkill + " -9 com.android.vending";
-		NativeCmd.ExecuteCommands(cmds, true);
+		cmds[1] = nCmd.cmdPkill + " -9 com.android.vending";
+		nCmd.ExecuteCommands(cmds, true);
 	}
 
 	private void MakeCarrierList()
@@ -108,7 +109,7 @@ public class Market
 			dr.mkdir();
 		}
 		String fn = sdcard + "/download/carriers.csv";
-		if ( !NativeCmd.fileExists(fn) ) {
+		if ( !nCmd.fileExists(fn) ) {
 			try {
 				final OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(fn));
 				out.write("DOCOMO,jp,44010\n");

@@ -64,6 +64,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 	private final static int EXEC_ENABLE = 1;
 	private final static int EXEC_DISABLE = 2;
 	private final static int EXEC_DELPERM = 3;
+	private static NativeCmd nCmd = NativeCmd.getInstance();
 	
 	private static String MatchPattern = "";
 	
@@ -445,7 +446,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 	
 	private static void exec_pm(String cmd, String arg)
 	{
-		NativeCmd.ExecCommand("pm " + cmd + " " + arg, true);
+		nCmd.ExecCommand("pm " + cmd + " " + arg, true);
 	}
 	
 	private static void DeletePermission()
@@ -467,7 +468,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 	private ArrayList<String> ReadPermission()
 	{
 		ArrayList<String> array = new ArrayList<String>();
-		NativeCmd.ExecCommand("cat /data/system/packages.xml > /data/data/jp.marijuana.androtweak/files/packages.xml",  false);
+		nCmd.ExecCommand("cat /data/system/packages.xml > /data/data/jp.marijuana.androtweak/files/packages.xml",  false);
 		String readString = "";
 		try {
 			FileInputStream  fileInputStream = my.openFileInput("packages.xml");
@@ -519,7 +520,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 	
 	private static void MakePackagesXml(ArrayList<String> array)
 	{
-		NativeCmd.ExecCommand("cat /data/system/packages.xml > /data/data/jp.marijuana.androtweak/files/packages.xml",  false);
+		nCmd.ExecCommand("cat /data/system/packages.xml > /data/data/jp.marijuana.androtweak/files/packages.xml",  false);
 
 		String readString = "";
 		try {
@@ -545,7 +546,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 				fileOutputStream.write(writeString.getBytes());
 				fileOutputStream.close();
 				
-				NativeCmd.ExecCommand("cat /data/data/jp.marijuana.androtweak/files/packages.xml > /data/system/packages.xml",  true);
+				nCmd.ExecCommand("cat /data/data/jp.marijuana.androtweak/files/packages.xml > /data/system/packages.xml",  true);
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -553,8 +554,8 @@ public class AppDetailsActivity  extends Activity implements Runnable
 		} catch (IOException e) {
 			Log.e(TAG, e.toString());
 		}
-		NativeCmd.ExecCommand("rm /data/data/jp.marijuana.androtweak/files/packages.xml",  true);
-		NativeCmd.ExecCommand("rm /data/dalvik-cache/data@app@" + appName + "*",  true);
+		nCmd.ExecCommand("rm /data/data/jp.marijuana.androtweak/files/packages.xml",  true);
+		nCmd.ExecCommand("rm /data/dalvik-cache/data@app@" + appName + "*",  true);
 	}
 	
 }

@@ -36,6 +36,7 @@ public class VddActivity extends Activity
 	private final KernelUtils oc = KernelUtils.getInstance();
 	private final String TAG = AndroTweakActivity.TAG;
 	private AlertDialog VddDlg = null;
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -88,7 +89,7 @@ public class VddActivity extends Activity
 		tray.addView(btncl);
 		tray.addView(dummy);
 		
-		if (NativeCmd.fileExists(oc.mydir + "/vdd.sh")) {
+		if (nCmd.fileExists(oc.mydir + "/vdd.sh")) {
 			Button btnd = new Button(this);
 			btnd.setText(R.string.btn_DelVDD);
 			btnd.setOnClickListener(new OnClickListener() {
@@ -165,7 +166,7 @@ public class VddActivity extends Activity
 				public void onClick(DialogInterface dialog, int whichButton) {
 					VddDlg.dismiss();
 					String cmd = "echo '" + edit.getTag().toString() + " " + edit.getText() + "' > " + oc.vdd_levels;
-					NativeCmd.ExecuteCommand(cmd, true);
+					nCmd.ExecuteCommand(cmd, true);
 					Log.i(TAG, cmd);
 					reload();
 				}
@@ -190,7 +191,7 @@ public class VddActivity extends Activity
 	 		br.close();
 	 		fr.close();
 
-	 		NativeCmd.createExecFile(cmd, oc.mydir + "/vdd.sh");
+	 		nCmd.createExecFile(cmd, oc.mydir + "/vdd.sh");
 	 	} catch (FileNotFoundException e) {
 	 		Log.e(TAG, e.toString());
 	 	} catch (IOException e) {

@@ -81,13 +81,19 @@ public class Reboot
 	
 	public void DoReboot()
 	{
-		File ff = new File(ctx.getDir("bin", 0), "reboot");
-		NativeCmd.ExecuteCommand(ff.getAbsolutePath(), true);
+		ExecuteReboot("");
 	}
 	
 	public void DoRebootRec()
 	{
+		ExecuteReboot("recovery");
+	}
+	
+	private void ExecuteReboot(String arg)
+	{
+		NativeCmd nCmd = NativeCmd.getInstance();
 		File ff = new File(ctx.getDir("bin", 0), "reboot");
-		NativeCmd.ExecuteCommand(ff.getAbsolutePath() + " recovery", true);
+		nCmd.ExecuteCommand(ff.getAbsolutePath() + " " + arg, true);
+		
 	}
 }

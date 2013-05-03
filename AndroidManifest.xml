@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.marijuana.androtweak"
-    android:versionCode="40"
-    android:versionName="0.4.0" >
+    android:versionCode="41"
+    android:versionName="0.4.1" >
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -37,7 +37,7 @@
 			</intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/appwidget" />
         </receiver>
-        <service android:name="jp.marijuana.androtweak.RootSwitchService" android:process=":remote" android:exported="false">
+        <service android:name="jp.marijuana.androtweak.RootSwitchWidgetProvider$RootSwitchService" android:process=":remote" android:exported="false">
             <intent-filter>
                 <action android:name="jp.marijuana.androtweak.CHANGE" />
             </intent-filter>
@@ -49,7 +49,7 @@
 			</intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/turbowidget" />
         </receiver>
-        <service android:name="jp.marijuana.androtweak.TurboSwitchService" android:process=":remote" android:exported="false">
+        <service android:name="jp.marijuana.androtweak.TurboSwitchProvider$TurboSwitchService" android:process=":remote" android:exported="false">
             <intent-filter>
                 <action android:name="jp.marijuana.androtweak.TURBO" />
             </intent-filter>
@@ -61,7 +61,7 @@
 			</intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/adbwidget" />
         </receiver>
-		<service android:name="jp.marijuana.androtweak.AdbSwitchService" android:process=":remote" android:exported="false">
+		<service android:name="jp.marijuana.androtweak.AdbSwitchWidgetProvider$AdbSwitchService" android:process=":remote" android:exported="false">
             <intent-filter>
                 <action android:name="jp.marijuana.androtweak.ADBWIFI" />
             </intent-filter>

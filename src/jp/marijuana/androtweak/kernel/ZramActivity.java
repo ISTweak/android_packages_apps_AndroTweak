@@ -30,6 +30,7 @@ public class ZramActivity extends Activity
 	private final KernelUtils oc = KernelUtils.getInstance();
 	private final LayoutParams lparm = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 	private final String TAG = AndroTweakActivity.TAG;
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -117,7 +118,7 @@ public class ZramActivity extends Activity
 		CheckBox chkbox = new CheckBox(this);
 		chkbox.setId(R.string.id_CheckBoot);
 		chkbox.setText(R.string.ChkBoot);
-		chkbox.setChecked(NativeCmd.fileExists(oc.mydir + "/swappiness.sh"));
+		chkbox.setChecked(nCmd.fileExists(oc.mydir + "/swappiness.sh"));
 		tray.addView(chkbox, lparm);
 		return tray;
 	}
@@ -141,7 +142,7 @@ public class ZramActivity extends Activity
 		});
 		tray.addView(btn, lparm);
 		
-		if (NativeCmd.fileExists(oc.zramsize)) {
+		if (nCmd.fileExists(oc.zramsize)) {
 			Button btnd = new Button(this);
 			btnd.setText(R.string.SettingDelete);
 			btnd.setOnClickListener(new OnClickListener() {
@@ -167,7 +168,7 @@ public class ZramActivity extends Activity
 		String item = (String)spinner.getSelectedItem();
 		cmds[2] = "echo " + item + " > " + oc.swappiness;
 		
-		String[] ret = NativeCmd.ExecCommands(cmds, true);
+		String[] ret = nCmd.ExecCommands(cmds, true);
 		if (ret[2].trim().replace("\n", "").length() == 0) {
 			Log.i(TAG, "set zram size");
 		} else {
@@ -186,7 +187,7 @@ public class ZramActivity extends Activity
 	{
 		CheckBox chkbox = (CheckBox) findViewById(R.string.id_CheckBoot);
 		if (chkbox.isChecked()) {
-			NativeCmd.createExecFile(cmd, oc.mydir + "/swappiness.sh");
+			nCmd.createExecFile(cmd, oc.mydir + "/swappiness.sh");
 		} else {
 			File file = new File(oc.mydir + "/swappiness.sh");
 			if (file.exists()) {
@@ -204,7 +205,7 @@ public class ZramActivity extends Activity
 		cmds[0] = "rm " + oc.zramsize;
 		cmds[1] = "echo " + item + " > " + oc.swappiness;
 		
-		NativeCmd.ExecuteCommands(cmds, true);
+		nCmd.ExecuteCommands(cmds, true);
 		SaveSwap(cmds[1]);
 		oc.flg_update = true;
 		oc.reload();

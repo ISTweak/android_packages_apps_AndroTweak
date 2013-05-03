@@ -1,25 +1,13 @@
 package jp.marijuana.androtweak.utils;
 
-import java.util.ArrayList;
-
-import jp.marijuana.androtweak.AdbSwitchWidgetProvider;
+import jp.marijuana.androtweak.AdbUtils;
 import jp.marijuana.androtweak.AndroTweakActivity;
 import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
-import jp.marijuana.androtweak.RootSwitchWidgetProvider;
-import jp.marijuana.androtweak.TurboSwitchProvider;
-import jp.marijuana.androtweak.kernel.KernelUtils;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import jp.marijuana.androtweak.RootUtils;
+import jp.marijuana.androtweak.TurboUtils;
 import android.app.ProgressDialog;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.res.Resources;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
@@ -29,11 +17,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RemoteViews;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class utilsLayout implements Runnable
 {
@@ -49,8 +35,8 @@ public class utilsLayout implements Runnable
 	
 	private static final String TAG = AndroTweakActivity.TAG;
 	public static String TetheringCmd = "";
-	public static Boolean ChangeAu = true;
-
+	private static NativeCmd nCmd = NativeCmd.getInstance();
+	
 	public utilsLayout(Context ctx)
 	{
 		utilsLayout.ctx = ctx;
@@ -70,7 +56,7 @@ public class utilsLayout implements Runnable
 	
 	private void makeInfo()
 	{
-		String Model = NativeCmd.getProperties("ro.product.model");
+		String Model = nCmd.getProperties("ro.product.model");
 		if ( Model.equals("IS06") ) {
 			TetheringCmd = "/system/bin/am start -n com.pantech.app.wifitest/.TetheringActivation";
 		} else if ( Model.equals("IS11PT") ) {
@@ -81,10 +67,10 @@ public class utilsLayout implements Runnable
 		AndroTweakActivity.Model = Model;
 		
 		String[] p = new String[5];
-		p[0] = NativeCmd.getProperties("ro.product.brand");
-		p[1] = NativeCmd.getProperties("ro.product.manufacturer");
-		p[2] = NativeCmd.getProperties("ro.build.version.release");
-		p[3] = NativeCmd.getProperties("gsm.version.baseband");
+		p[0] = nCmd.getProperties("ro.product.brand");
+		p[1] = nCmd.getProperties("ro.product.manufacturer");
+		p[2] = nCmd.getProperties("ro.build.version.release");
+		p[3] = nCmd.getProperties("gsm.version.baseband");
 
 		tb = new TableLayout(ctx);
 		tb.setOrientation(TableLayout.VERTICAL);
@@ -130,7 +116,7 @@ public class utilsLayout implements Runnable
 	
 	private void makeView()
 	{
-		if ( !ChangeAu ) {
+		if ( nCmd.ChangeAu ) {
 			layout.addView(makeSuBtn());
 		}
 		layout.addView(Reboot.getButton(ctx));
@@ -145,74 +131,45 @@ public class utilsLayout implements Runnable
 	private Button makeSuBtn()
 	{
 		Button btnsu = new Button(ctx);
-		if (NativeCmd.fileExists("/sbin/su")) {
+		if (nCmd.fileExists("/sbin/su")) {
 			btnsu.setText(R.string.btn_DelSu);
-			btnsu.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DoDisableSu(ctx.getApplicationContext());
-					UpdateWidget();
-					ShowWait();
-				}
-			});
 		} else {
 			btnsu.setText(R.string.btn_PutSu);
-			btnsu.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DoEnableSu(ctx.getApplicationContext());
-					UpdateWidget();
-					ShowWait();
-				}
-			});
 		}
+		
+		btnsu.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				RootUtils.ClickSu(ctx.getApplicationContext());
+				ShowWait();
+			}
+		});
 		return btnsu;
-	}
-	public static void DoAdbChange(Context ctx, Boolean wifi)
-	{
-		String[] cmds = new String[3];
-		if (wifi) {
-			cmds[0] = "setprop service.adb.tcp.port 5555";
-		} else {
-			cmds[0] = "setprop service.adb.tcp.port ''";
-		}
-		cmds[1] = "stop adbd";
-		cmds[2] = "start adbd";
-		NativeCmd.ExecuteCommands(cmds, true);
 	}
 	
 	private Button makeAdbBtn()
 	{
 		Button btnadb = new Button(ctx);
 		
-		switch ( adbType(ctx) ) {
+		switch ( AdbUtils.adbType(ctx) ) {
 		case 1:
 			btnadb.setText(R.string.btn_AdbPortOn);
-			btnadb.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DoAdbChange(ctx, true);
-					AdbUpdateWidget();
-					ShowWait();
-				}
-			});
 			break;
 		case 2:
 			btnadb.setText(R.string.btn_AdbPortOff);
-			btnadb.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DoAdbChange(ctx, false);
-					AdbUpdateWidget();
-					ShowWait();
-				}
-			});
 			break;
 		default:
 			btnadb.setText(R.string.btn_AdbPortOn);
 			btnadb.setEnabled(false);
 		}
-
+		
+		btnadb.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				AdbUtils.ClickAdb(ctx);
+				ShowWait();
+			}
+		});
 		return btnadb;
 	}
 	
@@ -220,31 +177,21 @@ public class utilsLayout implements Runnable
 	{
 		Button btntb = new Button(ctx);
 		
-		switch ( TurboMode(ctx) ) {
-		
+		switch ( TurboUtils.TurboMode(ctx) ) {
 		case 1:
 			btntb.setText(R.string.btn_TurboOff);
-			btntb.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DoTurboMode(ctx, 0);
-					TurboUpdateWidget();
-					ShowWait();
-				}
-			});
 			break;
 		default:
 			btntb.setText(R.string.btn_TurboOn);
-			btntb.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DoTurboMode(ctx, 1);
-					TurboUpdateWidget();
-					ShowWait();
-				}
-			});
 		}
-
+		
+		btntb.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TurboUtils.ClickTurbo(ctx);
+				ShowWait();
+			}
+		});
 		return btntb;
 	}
 	
@@ -255,183 +202,10 @@ public class utilsLayout implements Runnable
 		btnr.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				NativeCmd.ExecuteCommand(TetheringCmd, true);
+				nCmd.ExecuteCommand(TetheringCmd, true);
 			}
 		});
 		return btnr;
-	}
-	
-	public static void DoEnableSu(Context ctx)
-	{
-		if (NativeCmd.ExecuteCmdAlert(ctx, "ln -s /sbin/au /sbin/su", true)) {
-			Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.EnableSu), Toast.LENGTH_SHORT ).show();
-			Log.i(TAG, "Enable su");
-		}
-	}
-	
-	public static void DoDisableSu(Context ctx)
-	{
-		if (NativeCmd.ExecuteCmdAlert(ctx, "rm /sbin/su", true)) {
-			Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.DisableSu), Toast.LENGTH_SHORT ).show();
-			Log.i(TAG, "Disable su");
-		}
-	}
-	
-	private void UpdateWidget()
-	{
-		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.root_widget);
-		WidgetUpdate(ctx.getApplicationContext(), remoteViews);
-	}
-	
-	public static void WidgetUpdate(Context ctx, RemoteViews rViews)
-	{
-		int imgid;
-		if (NativeCmd.fileExists("/sbin/su")) {
-			imgid = R.drawable.widget_on;
-			NUpdate(ctx, true);
-		} else if (NativeCmd.fileExists("/sbin/pu")) {
-			imgid = R.drawable.widget_off;
-			NUpdate(ctx, false);
-		} else {
-			imgid = R.drawable.widget_blank;
-		}
-		rViews.setImageViewResource(R.id.rootwidget_icon, imgid);
-		ComponentName thisWidget = new ComponentName(ctx, RootSwitchWidgetProvider.class);
-		AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
-		manager.updateAppWidget(thisWidget, rViews);
-	}
-	
-	public static void NUpdate(Context ctx, Boolean cl)
-	{
-		NotificationManager manager = (NotificationManager)(ctx.getSystemService(Context.NOTIFICATION_SERVICE));
-		Resources res = ctx.getResources();
-		
-		if ( cl ) {
-			Notification notification = new Notification(R.drawable.notification, res.getString(R.string.EnableSu), System.currentTimeMillis());
-			Intent intent = new Intent(ctx, AndroTweakActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getService(ctx, 0, intent, 0);
-			notification.setLatestEventInfo(ctx, res.getString(R.string.EnableSuSubject), res.getString(R.string.EnableSuDesc), pendingIntent);
-			notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
-			manager.notify(R.string.app_name, notification);
-		} else {
-			manager.cancel(R.string.app_name);
-		}
-	}
-	
-	private void AdbUpdateWidget()
-	{
-		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.adb_widget);
-		AdbWidgetUpdate(ctx.getApplicationContext(), remoteViews);
-	}
-	
-	public static void AdbWidgetUpdate(Context ctx, RemoteViews rViews)
-	{
-		int imgid;
-		switch ( adbType(ctx) ) {
-		case 1:
-			Log.d(TAG, "USB");
-			imgid = R.drawable.adbusb;
-			break;
-		case 2:
-			Log.d(TAG, "Wifi");
-			imgid = R.drawable.adbwifi;
-			break;
-		default:
-			imgid = R.drawable.adboff;
-		}
-
-		rViews.setImageViewResource(R.id.adbwidget_icon, imgid);
-		ComponentName thisWidget = new ComponentName(ctx, AdbSwitchWidgetProvider.class);
-		AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
-		manager.updateAppWidget(thisWidget, rViews);
-	}
-	
-	public static int adbType(Context ctx)
-	{
-		WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
-		int wifiState = wifiManager.getWifiState();
-		String port = NativeCmd.getProperties("service.adb.tcp.port");
-		
-		if (wifiState == WifiManager.WIFI_STATE_ENABLED && port.length() == 0) {
-			return 1;
-		} else if( port.length() == 0 ) {
-			return 0;
-		}
-		return 2;
-	}
-	
-	private void TurboUpdateWidget()
-	{
-		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.turbo_widget);
-		TurboWidgetUpdate(ctx.getApplicationContext(), remoteViews);
-	}
-	
-	public static int TurboMode(Context ctx)
-	{
-		SharedPreferences pref = ctx.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
-		return pref.getInt("mode", 0);
-	}
-	
-	public static void TurboWidgetUpdate(Context ctx, RemoteViews rViews)
-	{
-		int imgid;
-		switch ( TurboMode(ctx) ) {
-		case 1:
-			imgid = R.drawable.turboon;
-			break;
-		default:
-			imgid = R.drawable.turbooff;
-		}
-
-		rViews.setImageViewResource(R.id.turbowidget_icon , imgid);
-		ComponentName thisWidget = new ComponentName(ctx, TurboSwitchProvider.class);
-		AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
-		manager.updateAppWidget(thisWidget, rViews);
-	}
-	
-	public static void DoTurboMode(Context ctx, int turbo)
-	{
-		SharedPreferences pref = ctx.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
-		int mode = pref.getInt("mode", 0);
-		if ( mode != turbo ) {
-			KernelUtils oc = KernelUtils.getInstance();
-			Editor editor = pref.edit();
-			editor.putInt("mode", turbo);
-			editor.commit();
-			
-			if ( turbo == 1 ) {
-				TurboSet(pref.getInt("tb_clock_min", oc.def_minclock),
-						 pref.getInt("tb_clock_max", oc.def_maxclock),
-						 pref.getString("tb_scheduler", oc.def_scheduler),
-						 pref.getString("tb_governor", oc.def_governor)
-				);
-			} else {
-				TurboSet(pref.getInt("nr_clock_min", oc.def_minclock),
-						 pref.getInt("nr_clock_max", oc.def_maxclock),
-						 pref.getString("nr_scheduler", oc.def_scheduler),
-						 pref.getString("nr_governor", oc.def_governor)
-				);				
-			}
-		} else {
-			Log.d(TAG, "Turbo HAGE");
-		}
-	}
-	
-	private static void TurboSet(int minclock, int maxclock, String scheduler, String governor)
-	{
-		KernelUtils oc = KernelUtils.getInstance();
-		ArrayList<String> blocks = oc.getAllBlockDevice();
-		int b = blocks.size();
-		String[] cmds = new String[b + 4];
-		int i = 0;
-		for ( i = 0; i < b; i++ ) {
-			cmds[i] = "echo " + scheduler + " > " + blocks.get(i);
-		}
-		cmds[i++] = "echo " + String.valueOf(minclock) + " > " + oc.scaling_min_freq;
-		cmds[i++] = "echo " + String.valueOf(maxclock) + " > " + oc.scaling_max_freq;
-		cmds[i++] = "echo " + governor + " > " + oc.scaling_governor;
-		cmds[i++] = "echo 3 > /proc/sys/vm/drop_caches";
-		NativeCmd.ExecuteCommands(cmds, true);
 	}
 	
 	@Override

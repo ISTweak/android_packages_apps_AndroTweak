@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AndroTweak</string>
+	<string name="lbl_rootswitch">Root Switch</string>
+	<string name="lbl_adbswitch">ADB Switch</string>
+	<string name="lbl_turboswitch">Turbo Switch</string>
     <string name="msg_abort">This application cannot be used unless su or au is installed.</string>
     
     <string name="tabmenu_kernel">kernel</string>
@@ -23,8 +26,82 @@
     <string name="btn_vdd">VDD settings</string>
     <string name="btn_SaveVDD">"Save settings"</string>
     <string name="btn_DelVDD">"Delete settings"</string>
-    <string name="msg_SaveVDD">VDDの設定を保存しました</string>
-    <string name="msg_DelVDD">VDDの設定を削除しました</string>
+    <string name="msg_SaveVDD">Save VDD settings</string>
+    <string name="msg_DelVDD">Delete VDD settings</string>
+    <string name="msg_SaveZram">Zram is reflected after a reboot.</string>
+    <string name="btn_TurboMode">Turbo mode</string>
+    <string name="lbl_TurboMode">Setting Turbo mode</string>
+	
+	<string name="id_MinClock">1</string>
+	<string name="id_MaxClock">2</string>
+	<string name="id_Governor">3</string>
+	<string name="id_Scheduler">4</string>
+	<string name="id_CheckBoot">5</string>
+	<string name="id_Zram">6</string>
+	<string name="id_Swappiness">7</string>
+	
+	<string name="btn_DelSu">Disable su command</string>
+    <string name="btn_PutSu">Enable su command</string>
+	<string name="EnableSu">su command is enabled</string>
+    <string name="DisableSu">su command is disabled</string>
+    <string name="EnableSuSubject">Enable su command</string>
+    <string name="EnableSuDesc">"naccurate &#8230;" may come out with a part of applications.</string>
+    <string name="widget_desc">The state of su </string>
+    <string name="btn_Reboot">Reboot</string>
+    <string name="RebootNormal">Boot</string>
+	<string name="RebootRecovery">Recovery</string>
+	<string name="RebootMode">Reboot mode</string>
+	<string name="btn_CacheClear">Cache clear</string>
+	<string name="CACHE_CLEAR">Cache clear</string>
+    <string name="CACHE_CLEAR_DESC">/data/cache and /data/dalvik-cache is clear</string>
+    <string name="btn_CLEAR">Clear</string>
+	<string name="btn_Tethering">Enable tethering</string>
+	<string name="btn_AdbPortOn">Adb Wifi</string>
+	<string name="btn_AdbPortOff">Adb USB</string>
+	<string name="lbl_Carrier">Carrier</string>
+	<string name="lbl_Maker">Maker</string>
+	<string name="lbl_Model">Model</string>
+	<string name="lbl_AndroidVer">Version</string>
+	<string name="lbl_BaseVer">Base band</string>
+	<string name="lbl_IpAddress">IP address</string>
+	<string name="btn_TurboOn">Enable turbo mode</string>
+	<string name="btn_TurboOff">Disable turbo mode</string>
+	
+	<string name="tabmenu_data">/data/app</string>
+	<string name="tabmenu_system">/system/app</string>
+	<string name="btn_AppList">Application manage</string>
+	<string name="AppWaitAction">Reading &#8230;</string>
+    <string name="ActionDefAppDisable">Application manage</string>
+    <string name="ActionDefAppDesc">Blue=Disabled/White=Enabled</string>
+    <string name="ToDelete"> to disable</string>
+    <string name="ToReturn"> to enable</string>
+    <string name="DeleteConfirm">Confirm</string>
+    <string name="EnableAction">Enable</string>
+    <string name="DisableAction">Disable</string>
+	<string name="SelectDirTittle">Choice directory</string>
+	<string name="btn_Market">Market debug to enable</string>
+	<string name="btn_MarketRe">Market debug to disable</string>
+	<string name="btn_LifeLogTri">LifeLog to disable</string>
+    <string name="btn_LifeLogRec">LifeLog to enable</string>
+    <string name="lbl_datasize">/data Full size</string>
+    <string name="lbl_datause">/data Used size</string>
+    <string name="lbl_dataempty">/data Free size</string>
+    <string name="lbl_dataapp">/data/app size</string>
+    <string name="lbl_datadata">/data/data size</string>
+    <string name="lbl_version">バージョン</string>
+    <string name="btn_Details">Details</string>
+    <string name="btn_Reinstall">Reinstallation</string>
+    <string name="lbl_permission">Permission</string>
+    <string name="btn_permdel">Permission delete</string>
+    <string name="str_apperror">Application cannot be read.</string>
+
+	<string name="btn_Execute">Update</string>
+	<string name="btn_Close">Close</string>
+	<string name="SettingEnd">Apply settings</string>
+	<string name="SettingDelete">Settings delete</string>
+	<string name="btn_Cancel">Cancel</string>
+	<string name="msg_Loading">Setup &#8230;</string>
+	<string name="msg_Executing">Executing &#8230;</string>
     
     
 </resources>

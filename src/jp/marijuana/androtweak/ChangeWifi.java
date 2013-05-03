@@ -1,6 +1,5 @@
 package jp.marijuana.androtweak;
 
-import jp.marijuana.androtweak.utils.utilsLayout;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,7 @@ public class ChangeWifi extends BroadcastReceiver
 		String action = intent.getAction();
 		if (action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
 			RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.adb_widget);
-			utilsLayout.AdbWidgetUpdate(ctx, remoteViews);
+			AdbUtils.AdbWidgetUpdate(ctx, remoteViews);
 		}
 	}
 }

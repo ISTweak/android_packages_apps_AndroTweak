@@ -36,9 +36,65 @@ public class AndroTweakActivity extends Activity
 	public static utilsLayout uLayout;
 	public static appLayout aLayout;
 	public static kernelLayout kLayout;
+	private static NativeCmd nCmd;
 
 	private static final int MENUID_MENU1 = (Menu.FIRST + 1);
 	private static final int MENUID_MENU2 = (Menu.FIRST + 2);
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		
+		MainLayout = new LinearLayout(this);
+		MainLayout.setOrientation(LinearLayout.VERTICAL);
+		setContentView(MainLayout);
+		
+		makeTitle();
+		nCmd = NativeCmd.getInstance();
+		if ( nCmd.su ) {
+			assertBinaries(false);
+			makePage();
+		} else {
+			TextView label = new TextView(this);
+			label.setText(R.string.msg_abort);
+			MainLayout.addView(label);
+		}
+	}
+	
+	private void assertBinaries(Boolean Compulsion)
+	{
+		File bindir = this.getDir("bin", 0);
+		if ( Compulsion ) {
+			String[] children = bindir.list();
+			for (int i=0; i<children.length; i++) { 
+				File fs = new File(bindir, children[i]);
+				fs.delete();
+			}
+		}
+
+		File file = new File(bindir, "reboot");
+		if ( !file.exists() || Compulsion ) {
+			nCmd.copyRawFile(getResources().openRawResource(R.raw.reboot), file, "0755", false);
+			Toast.makeText(this, "copy reboot", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	private void makePage()
+	{
+		PagerLayout = new ViewPager(this);
+		PagerLayout.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				makeMainHead(position);
+			}
+		});
+		PagerAdapter mPagerAdapter = new MyPagerAdapter();
+		PagerLayout.setAdapter(mPagerAdapter);
+		
+		makeMainHead(0);
+		makeLayout();
+	}
 	
 	private void makeMainHead(int position)
 	{
@@ -89,29 +145,7 @@ public class AndroTweakActivity extends Activity
 		
 		return txtV;
 	}
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		
-		MainLayout = new LinearLayout(this);
-		MainLayout.setOrientation(LinearLayout.VERTICAL);
-		setContentView(MainLayout);
-		
-		makeTitle();
-		if ( checkSuCmd() ) {
-			assertBinaries(false);
-			cmdPath();
-			makePage();
-		} else {
-			TextView label = new TextView(this);
-			label.setText(R.string.msg_abort);
-			MainLayout.addView(label);
-			Log.e(TAG, "su/au command not found");
-		}
-	}
-	
+
 	private void makeTitle()
 	{
 		String Version = "";
@@ -125,73 +159,7 @@ public class AndroTweakActivity extends Activity
 
 		setTitle(getString(R.string.app_name) + " - " + Version);
 	}
-	
-	private void makePage()
-	{
-		PagerLayout = new ViewPager(this);
-		PagerLayout.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				makeMainHead(position);
-			}
-		});
-		PagerAdapter mPagerAdapter = new MyPagerAdapter();
-		PagerLayout.setAdapter(mPagerAdapter);
-		
-		makeMainHead(0);
-		makeLayout();
-	}
 
-	private boolean checkSuCmd()
-	{
-		if (NativeCmd.fileExists("/sbin/au")) {
-			NativeCmd.au = "/sbin/au";
-			utilsLayout.ChangeAu = false;
-		} else if (NativeCmd.fileExists("/system/xbin/su")) {
-			NativeCmd.au = "/system/xbin/su";
-			utilsLayout.ChangeAu = true;
-		} else if (NativeCmd.fileExists("/system/bin/su")) {
-			NativeCmd.au = "/system/bin/su";
-			utilsLayout.ChangeAu = true;
-		} else if (NativeCmd.fileExists("/sbin/su")) {
-			NativeCmd.au = "/sbin/su";
-			utilsLayout.ChangeAu = true;
-		} else {
-			return false;
-		}
-		
-		Log.i(TAG, NativeCmd.au + " command found");
-		return true;
-	}
-	
-	private void assertBinaries(Boolean Compulsion)
-	{
-		File bindir = this.getDir("bin", 0);
-		if ( Compulsion ) {
-			String[] children = bindir.list();
-			for (int i=0; i<children.length; i++) { 
-				File fs = new File(bindir, children[i]);
-				fs.delete();
-			}
-		}
-
-		File file = new File(bindir, "reboot");
-		if ( !file.exists() || Compulsion ) {
-			NativeCmd.copyRawFile(getResources().openRawResource(R.raw.reboot), file, "0755", false);
-			Toast.makeText(this, "copy reboot", Toast.LENGTH_SHORT).show();
-		}
-	}
-	
-	private void cmdPath()
-	{
-		NativeCmd.cmdGrep = NativeCmd.getCmdPath("grep");
-		NativeCmd.cmdSed = NativeCmd.getCmdPath("sed");
-		NativeCmd.cmdRm = NativeCmd.getCmdPath("rm");
-		NativeCmd.cmdPkill = NativeCmd.getCmdPath("pkill");
-		NativeCmd.cmdPareL = NativeCmd.getCmdPath("[");
-		NativeCmd.cmdPareR = NativeCmd.getCmdPath("]");
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{

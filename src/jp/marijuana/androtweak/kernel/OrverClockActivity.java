@@ -33,6 +33,7 @@ public class OrverClockActivity extends Activity
 	private final TableRow.LayoutParams trlp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
 	private TableLayout layout;
 	private final String TAG = AndroTweakActivity.TAG;
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -55,7 +56,7 @@ public class OrverClockActivity extends Activity
 		CheckBox chkbox = new CheckBox(this);
 		chkbox.setId(R.string.id_CheckBoot);
 		chkbox.setText(R.string.ChkBoot);
-		chkbox.setChecked(NativeCmd.fileExists(oc.mydir + "/boot.sh"));
+		chkbox.setChecked(nCmd.fileExists(oc.mydir + "/boot.sh"));
 		
 		//設定ボタン
 		Button btn = new Button(this);
@@ -226,7 +227,7 @@ public class OrverClockActivity extends Activity
 		cmds[i++] = "echo " + makeGovernor() + " > " + oc.scaling_governor;
 		cmds[i++] = "echo 3 > /proc/sys/vm/drop_caches";
 		
-		String[] ret = NativeCmd.ExecCommands(cmds, true);
+		String[] ret = nCmd.ExecCommands(cmds, true);
 		if (ret[2].trim().replace("\n", "").length() == 0) {
 			Log.i(TAG, "set cpu freq and scaling");
 		} else {
@@ -235,7 +236,7 @@ public class OrverClockActivity extends Activity
 		
 		CheckBox chkbox = (CheckBox) findViewById(R.string.id_CheckBoot);
 		if (chkbox.isChecked()) {
-			NativeCmd.createExecFile(cmds, oc.mydir + "/boot.sh");
+			nCmd.createExecFile(cmds, oc.mydir + "/boot.sh");
 			Log.i(TAG, "make: boot.sh");
 		} else {
 			File file = new File(oc.mydir + "/boot.sh");

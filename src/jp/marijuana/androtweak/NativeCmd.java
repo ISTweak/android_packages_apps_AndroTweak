@@ -19,16 +19,61 @@ import android.util.Log;
 
 public class NativeCmd
 {
-	public static String au = "/sbin/au";
-	public static String sh = "/system/bin/sh";
-	public static String cmdGrep = "grep";
-	public static String cmdSed = "sed";
-	public static String cmdRm = "rm";
-	public static String cmdPkill = "pkill";
-	public static String cmdPareL = "[";
-	public static String cmdPareR = "]";
+	public String au = "/sbin/au";
+	public String sh = "/system/bin/sh";
+	public String cmdGrep = "grep";
+	public String cmdSed = "sed";
+	public String cmdRm = "rm";
+	public String cmdPkill = "pkill";
+	public String cmdPareL = "[";
+	public String cmdPareR = "]";
+	public String cmdDu = "du";
+	public Boolean ChangeAu = false;
+	public Boolean su = false;
 
 	private final static String TAG = AndroTweakActivity.TAG;
+	private static NativeCmd instance = new NativeCmd();
+	
+	public static NativeCmd getInstance()
+	{
+		return instance;
+	}
+	
+	private NativeCmd()
+	{
+		checkSuCmd();
+		cmdGrep = getCmdPath("grep");
+		cmdSed = getCmdPath("sed");
+		cmdRm = getCmdPath("rm");
+		cmdPkill = getCmdPath("pkill");
+		cmdPareL = getCmdPath("[");
+		cmdPareR = getCmdPath("]");
+		cmdDu = getCmdPath("du");
+	}
+	
+	private void checkSuCmd()
+	{
+		if (fileExists("/sbin/au")) {
+			au = "/sbin/au";
+			ChangeAu = true;
+		} else if (fileExists("/system/xbin/su")) {
+			au = "/system/xbin/su";
+			ChangeAu = false;
+		} else if (fileExists("/system/bin/su")) {
+			au = "/system/bin/su";
+			ChangeAu = false;
+		} else if (fileExists("/sbin/su")) {
+			au = "/sbin/su";
+			ChangeAu = false;
+		} else {
+			Log.e(TAG, "su/au command not found");
+			su = false;
+			return;
+		}
+		
+		Log.i(TAG, au + " command found");
+		su = true;
+	}
 	
 	private static class StreamGobbler extends Thread
 	{
@@ -59,15 +104,15 @@ public class NativeCmd
 		}
 	}	
 
-	public static String getCmdPath(String cmd)
+	private String getCmdPath(String cmd)
 	{
-		if ( NativeCmd.fileExists("/data/root/bin/" + cmd) ) {
+		if ( fileExists("/data/root/bin/" + cmd) ) {
 			return "/data/root/bin/" + cmd;
-		} else if ( NativeCmd.fileExists("/data/local/bin/" + cmd) ) {
+		} else if ( fileExists("/data/local/bin/" + cmd) ) {
 			return "/data/local/bin/" + cmd;
-		} else if ( NativeCmd.fileExists("/system/xbin/" + cmd) ) {
+		} else if ( fileExists("/system/xbin/" + cmd) ) {
 			return "/system/xbin/" + cmd;
-		} else if ( NativeCmd.fileExists("/sbin/" + cmd) ) {
+		} else if ( fileExists("/sbin/" + cmd) ) {
 			return "/sbin/" + cmd;
 		}
 		return cmd;
@@ -78,7 +123,7 @@ public class NativeCmd
 	 * @param String fn
 	 * @return boolean
 	 */
-	public static boolean fileExists(String fn)
+	public boolean fileExists(String fn)
 	{
 		return new File(fn).exists();
 	}
@@ -89,12 +134,12 @@ public class NativeCmd
 	 * @param Boolean su
 	 * @return String[]
 	 */
-	public static String[] ExecCommands(String[] cmds, Boolean su)
+	public String[] ExecCommands(String[] cmds, Boolean su)
 	{
 		String[] rets = new String[3];
-		String shell = NativeCmd.sh;
+		String shell = sh;
 		if ( su ) {
-			shell = NativeCmd.au;
+			shell = au;
 		}
 
 		ByteArrayOutputStream std;
@@ -143,7 +188,7 @@ public class NativeCmd
 	 * @param Boolean　su
 	 * @return　String[]
 	 */
-	public static String[] ExecCommand(String cmd, Boolean su)
+	public String[] ExecCommand(String cmd, Boolean su)
 	{
 		String[] arrayOfCmd = new String[1];
 		arrayOfCmd[0] = cmd;
@@ -155,7 +200,7 @@ public class NativeCmd
 	 * @param key
 	 * @return　String
 	 */
-	public static String getProperties(String key)
+	public String getProperties(String key)
 	{
 		String[] ret = new String[3];
 		ret = ExecCommand("getprop " + key, false);
@@ -165,7 +210,7 @@ public class NativeCmd
 		return "";
 	}
 	
-	public static String getCat(String fn)
+	public String getCat(String fn)
 	{
 		String[] ret = new String[3];
 		ret = ExecCommand("cat " + fn, false);
@@ -176,22 +221,21 @@ public class NativeCmd
 	}
 
 	/**
-	 * コマンドを実行する(戻り値がある場合はアラート)
+	 * コマンドを実行する
 	 * @param Context ctx
 	 * @param String cmd
 	 * @param Boolean su
 	 */
-	public static boolean ExecuteCmdAlert(Context ctx, String cmd, Boolean su)
+	public boolean ExecuteCmdAlert(Context ctx, String cmd, Boolean su)
 	{
 		String[] ret = new String[3];
-    	ret = NativeCmd.ExecCommand(cmd, su);
+    	ret = ExecCommand(cmd, su);
     	
     	if ( ret[1].length() > 0 ) {
-    		//ISTweakActivity.alert(ctx, ret[1]);
     		Log.d(TAG, ret[1]);
     	}
+    	
     	if ( ret[2].length() > 0 ) {
-    		//ISTweakActivity.alert(ctx, ret[2]);
     		Log.e(TAG, ret[2]);
     		return false;
     	} 
@@ -203,7 +247,7 @@ public class NativeCmd
 	 * @param String　paramCommand
 	 * @param Boolean su
 	 */
-	public static void ExecuteCommand(String cmd, Boolean su)
+	public void ExecuteCommand(String cmd, Boolean su)
 	{
 		String[] arrayOfString = new String[1];
 		arrayOfString[0] = cmd;
@@ -215,11 +259,11 @@ public class NativeCmd
 	 * @param String[] cmds
 	 * @param Boolean su
 	 */
-	public static void ExecuteCommands(String[] cmds, Boolean su)
+	public void ExecuteCommands(String[] cmds, Boolean su)
 	{
-		String shell = NativeCmd.sh;
+		String shell = sh;
 		if ( su ) {
-			shell = NativeCmd.au;
+			shell = au;
 		}
 		
 		try {
@@ -242,7 +286,7 @@ public class NativeCmd
 	 * @param fn ファイル名
 	 * @return
 	 */
-	public static String readFile(String fn)
+	public String readFile(String fn)
 	{
 		String str = "";
 		try {
@@ -266,7 +310,7 @@ public class NativeCmd
 	 * @param cmd コマンド
 	 * @param fn	ファイル名（フルパス）
 	 */
-	public static void createExecFile(String cmd, String fn)
+	public void createExecFile(String cmd, String fn)
 	{
 		try {
 			final OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(fn));
@@ -282,7 +326,7 @@ public class NativeCmd
 		}
 	}
 
-	public static void createExecFile(String[] cmds, String fn)
+	public void createExecFile(String[] cmds, String fn)
 	{
 		try {
 			final OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(fn));
@@ -300,7 +344,7 @@ public class NativeCmd
 		}
 	}
 
-	public static void copyRawFile(InputStream is, File file, String mode, boolean root)
+	public void copyRawFile(InputStream is, File file, String mode, boolean root)
 	{
 		final String abspath = file.getAbsolutePath();
 		FileOutputStream out;
@@ -327,7 +371,7 @@ public class NativeCmd
 		}
 	}
 
-	public static void sleep(int time)
+	public void sleep(int time)
 	{
 		try {
 			Thread.sleep(time);

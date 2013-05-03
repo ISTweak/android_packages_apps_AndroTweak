@@ -24,6 +24,7 @@ public class appLayout implements Runnable
 	private static LinearLayout layout;
 	private TableLayout tb;
 	private final TableRow.LayoutParams trlp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+	private NativeCmd nCmd = NativeCmd.getInstance();
 	
 	private static ProgressDialog waitDialog;
 	private Thread thread;
@@ -77,7 +78,7 @@ public class appLayout implements Runnable
 	private long DirectorySize(String dir)
 	{
 		long size = 0;
-		String[] ret = NativeCmd.ExecCommand(NativeCmd.getCmdPath("du") + " -s -k " + dir + "|" + NativeCmd.cmdGrep + " -o [0-9]*", true);
+		String[] ret = nCmd.ExecCommand(nCmd.cmdDu + " -s -k " + dir + "|" + nCmd.cmdGrep + " -o [0-9]*", true);
 		String str = ret[1].replace("\n", "").trim();
 		if (str.length() > 0) {
 			size = Long.parseLong(str);
@@ -108,7 +109,7 @@ public class appLayout implements Runnable
 	{
 		layout.addView(btnAppList.getButton(ctx));
 		layout.addView(Market.getButton(ctx, this));
-		if (NativeCmd.fileExists("/ldb/")) {
+		if (nCmd.fileExists("/ldb/")) {
 			layout.addView(LifeLog.getButton(ctx, my));
 		}
 	}
