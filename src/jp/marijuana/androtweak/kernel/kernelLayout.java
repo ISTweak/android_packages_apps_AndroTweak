@@ -72,6 +72,10 @@ public class kernelLayout implements Runnable
 		if (oc.is_vdd) {
 			layout.addView(makeVdd());
 		}
+		
+		if (oc.is_clock) {
+			layout.addView(makeTurboMode());
+		}
 	}
 	
 	private void setTableRow(int lbl, String str)
@@ -101,6 +105,21 @@ public class kernelLayout implements Runnable
 			public void onClick(View v) {
 				Intent intent = new Intent();
 				intent.setClassName("jp.marijuana.androtweak", "jp.marijuana.androtweak.kernel.OrverClockActivity");
+				ctx.startActivity(intent);
+			}
+		});
+		return btnoc;
+	}
+	
+	private Button makeTurboMode()
+	{
+		Button btnoc = new Button(ctx);
+		btnoc.setText(R.string.btn_TurboMode);
+		btnoc.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClassName("jp.marijuana.androtweak", "jp.marijuana.androtweak.kernel.TurboActivity");
 				ctx.startActivity(intent);
 			}
 		});

@@ -5,11 +5,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
-public class AdbSwitchService extends Service
+public class TurboSwitchService extends Service
 {
-	final public String MSG_CHANGE = "jp.marijuana.androtweak.ADBWIFI";
+	final public String MSG_CHANGE = "jp.marijuana.androtweak.TURBO";
 	
 	@Override
 	public void onStart(Intent intent, int startId)
@@ -19,29 +20,25 @@ public class AdbSwitchService extends Service
 		Intent buttonIntent = new Intent();
 		buttonIntent.setAction(MSG_CHANGE);
 		PendingIntent pendingIntent = PendingIntent.getService(this, 0, buttonIntent, 0);
-		RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.adb_widget);
-		remoteViews.setOnClickPendingIntent(R.id.adbwidget_icon, pendingIntent);
+		RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.turbo_widget);
+		remoteViews.setOnClickPendingIntent(R.id.turbowidget_icon, pendingIntent);
 
 		if (MSG_CHANGE.equals(intent.getAction())) {
-			switch ( utilsLayout.adbType(this) ) {
+			switch ( utilsLayout.TurboMode(this) ) {
 			case 1:
-				utilsLayout.DoAdbChange(this, true);
+				Log.d(AndroTweakActivity.TAG, "Turbo ON");
+				utilsLayout.DoTurboMode(this, 0);
 				break;
-			case 2:
-				utilsLayout.DoAdbChange(this, false);
+			default:
+				Log.d(AndroTweakActivity.TAG, "Turbo OFF");
+				utilsLayout.DoTurboMode(this, 1);
 				break;
 			}
 		}
-		
-	    try {
-	    	Thread.sleep(1000);
-	    } catch (InterruptedException e) {}
-		
-		utilsLayout.AdbWidgetUpdate(this, remoteViews);
+
+		utilsLayout.TurboWidgetUpdate(this, remoteViews);
 	}
-	
-	
-	
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO 自動生成されたメソッド・スタブ

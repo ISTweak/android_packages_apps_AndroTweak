@@ -5,13 +5,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 
-public class RootSwitchWidgetProvider extends AppWidgetProvider
+public class TurboSwitchProvider extends AppWidgetProvider
 {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		Intent intent = new Intent(context, RootSwitchService.class);
+		Intent intent = new Intent(context, TurboSwitchService.class);
 		context.startService(intent);
 	}
 }

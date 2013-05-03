@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.marijuana.androtweak"
-    android:versionCode="33"
-    android:versionName="0.3.3" >
+    android:versionCode="40"
+    android:versionName="0.4.0" >
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -29,6 +29,7 @@
  		<activity android:name="jp.marijuana.androtweak.kernel.OrverClockActivity"></activity>
  		<activity android:name="jp.marijuana.androtweak.kernel.ZramActivity"></activity>
  		<activity android:name="jp.marijuana.androtweak.kernel.VddActivity"></activity>
+ 		<activity android:name="jp.marijuana.androtweak.kernel.TurboActivity"></activity>
 
  		<receiver android:name="jp.marijuana.androtweak.RootSwitchWidgetProvider" android:label="@string/lbl_rootswitch"  android:process=":remote" android:exported="false">
             <intent-filter>
@@ -41,6 +42,19 @@
                 <action android:name="jp.marijuana.androtweak.CHANGE" />
             </intent-filter>
         </service>
+        
+        <receiver android:name="jp.marijuana.androtweak.TurboSwitchProvider" android:label="@string/lbl_turboswitch"  android:process=":remote" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/turbowidget" />
+        </receiver>
+        <service android:name="jp.marijuana.androtweak.TurboSwitchService" android:process=":remote" android:exported="false">
+            <intent-filter>
+                <action android:name="jp.marijuana.androtweak.TURBO" />
+            </intent-filter>
+        </service>
+        
 		<receiver android:name="jp.marijuana.androtweak.AdbSwitchWidgetProvider" android:label="@string/lbl_adbswitch"  android:process=":remote" android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

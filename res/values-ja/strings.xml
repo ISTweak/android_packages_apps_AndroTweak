@@ -3,6 +3,7 @@
 	<string name="app_name">AndroTweak</string>
 	<string name="lbl_rootswitch">Root Switch</string>
 	<string name="lbl_adbswitch">ADB Switch</string>
+	<string name="lbl_turboswitch">Turbo Switch</string>
 	<string name="msg_abort">このアプリケーションは、suコマンドかauコマンドがインストールされていないと使用できません。</string>
 	
 	<string name="tabmenu_kernel">カーネル</string>
@@ -28,6 +29,8 @@
     <string name="msg_SaveVDD">VDDの設定を保存しました</string>
     <string name="msg_DelVDD">VDDの設定を削除しました</string>
     <string name="msg_SaveZram">Zramは再起動後に反映されます</string>
+    <string name="btn_TurboMode">ターボモード</string>
+    <string name="lbl_TurboMode">ターボモード時の設定</string>
 	
 	<string name="id_MinClock">1</string>
 	<string name="id_MaxClock">2</string>
@@ -61,6 +64,8 @@
 	<string name="lbl_AndroidVer">バージョン</string>
 	<string name="lbl_BaseVer">ベースバンド</string>
 	<string name="lbl_IpAddress">IPアドレス</string>
+	<string name="btn_TurboOn">ターボモード ONにする</string>
+	<string name="btn_TurboOff">ターボモード OFFにする</string>
 	
 	<string name="tabmenu_data">/data/app</string>
 	<string name="tabmenu_system">/system/app</string>

@@ -1,10 +1,14 @@
 package jp.marijuana.androtweak.utils;
 
+import java.util.ArrayList;
+
 import jp.marijuana.androtweak.AdbSwitchWidgetProvider;
 import jp.marijuana.androtweak.AndroTweakActivity;
 import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
 import jp.marijuana.androtweak.RootSwitchWidgetProvider;
+import jp.marijuana.androtweak.TurboSwitchProvider;
+import jp.marijuana.androtweak.kernel.KernelUtils;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,6 +17,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -133,6 +139,7 @@ public class utilsLayout implements Runnable
 			layout.addView(makeTethering());
 		}
 		layout.addView(makeAdbBtn());
+		layout.addView(makeTurboBtn());
 	}
 	
 	private Button makeSuBtn()
@@ -207,6 +214,38 @@ public class utilsLayout implements Runnable
 		}
 
 		return btnadb;
+	}
+	
+	private Button makeTurboBtn()
+	{
+		Button btntb = new Button(ctx);
+		
+		switch ( TurboMode(ctx) ) {
+		
+		case 1:
+			btntb.setText(R.string.btn_TurboOff);
+			btntb.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					DoTurboMode(ctx, 0);
+					TurboUpdateWidget();
+					ShowWait();
+				}
+			});
+			break;
+		default:
+			btntb.setText(R.string.btn_TurboOn);
+			btntb.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					DoTurboMode(ctx, 1);
+					TurboUpdateWidget();
+					ShowWait();
+				}
+			});
+		}
+
+		return btntb;
 	}
 	
 	private Button makeTethering()
@@ -319,6 +358,80 @@ public class utilsLayout implements Runnable
 			return 0;
 		}
 		return 2;
+	}
+	
+	private void TurboUpdateWidget()
+	{
+		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.turbo_widget);
+		TurboWidgetUpdate(ctx.getApplicationContext(), remoteViews);
+	}
+	
+	public static int TurboMode(Context ctx)
+	{
+		SharedPreferences pref = ctx.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
+		return pref.getInt("mode", 0);
+	}
+	
+	public static void TurboWidgetUpdate(Context ctx, RemoteViews rViews)
+	{
+		int imgid;
+		switch ( TurboMode(ctx) ) {
+		case 1:
+			imgid = R.drawable.turboon;
+			break;
+		default:
+			imgid = R.drawable.turbooff;
+		}
+
+		rViews.setImageViewResource(R.id.turbowidget_icon , imgid);
+		ComponentName thisWidget = new ComponentName(ctx, TurboSwitchProvider.class);
+		AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
+		manager.updateAppWidget(thisWidget, rViews);
+	}
+	
+	public static void DoTurboMode(Context ctx, int turbo)
+	{
+		SharedPreferences pref = ctx.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
+		int mode = pref.getInt("mode", 0);
+		if ( mode != turbo ) {
+			KernelUtils oc = KernelUtils.getInstance();
+			Editor editor = pref.edit();
+			editor.putInt("mode", turbo);
+			editor.commit();
+			
+			if ( turbo == 1 ) {
+				TurboSet(pref.getInt("tb_clock_min", oc.def_minclock),
+						 pref.getInt("tb_clock_max", oc.def_maxclock),
+						 pref.getString("tb_scheduler", oc.def_scheduler),
+						 pref.getString("tb_governor", oc.def_governor)
+				);
+			} else {
+				TurboSet(pref.getInt("nr_clock_min", oc.def_minclock),
+						 pref.getInt("nr_clock_max", oc.def_maxclock),
+						 pref.getString("nr_scheduler", oc.def_scheduler),
+						 pref.getString("nr_governor", oc.def_governor)
+				);				
+			}
+		} else {
+			Log.d(TAG, "Turbo HAGE");
+		}
+	}
+	
+	private static void TurboSet(int minclock, int maxclock, String scheduler, String governor)
+	{
+		KernelUtils oc = KernelUtils.getInstance();
+		ArrayList<String> blocks = oc.getAllBlockDevice();
+		int b = blocks.size();
+		String[] cmds = new String[b + 4];
+		int i = 0;
+		for ( i = 0; i < b; i++ ) {
+			cmds[i] = "echo " + scheduler + " > " + blocks.get(i);
+		}
+		cmds[i++] = "echo " + String.valueOf(minclock) + " > " + oc.scaling_min_freq;
+		cmds[i++] = "echo " + String.valueOf(maxclock) + " > " + oc.scaling_max_freq;
+		cmds[i++] = "echo " + governor + " > " + oc.scaling_governor;
+		cmds[i++] = "echo 3 > /proc/sys/vm/drop_caches";
+		NativeCmd.ExecuteCommands(cmds, true);
 	}
 	
 	@Override
