@@ -125,7 +125,9 @@ public class utilsLayout implements Runnable
 			layout.addView(makeTethering());
 		}
 		layout.addView(makeAdbBtn());
-		layout.addView(makeTurboBtn());
+		if (TurboUtils.TurboMode(ctx) != -1) {
+			layout.addView(makeTurboBtn());
+		}
 	}
 	
 	private Button makeSuBtn()

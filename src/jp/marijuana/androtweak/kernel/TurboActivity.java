@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import jp.marijuana.androtweak.R;
+import jp.marijuana.androtweak.TurboUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -228,7 +229,11 @@ public class TurboActivity  extends Activity
 		editor.putInt("nr_clock_max", oc.def_maxclock);
 		editor.putString("nr_scheduler", oc.def_scheduler);
 		editor.putString("nr_governor", oc.def_governor);
+		
+		editor.putInt("mode", 0);
 		editor.commit();
+		
+		TurboUtils.WidgetUpdate(this);
 		
 		Toast.makeText(this, R.string.SettingEnd, Toast.LENGTH_SHORT).show();
 		finish();

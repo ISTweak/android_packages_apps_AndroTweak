@@ -15,19 +15,25 @@ public class TurboUtils
 	public static void ClickTurbo(Context ctx)
 	{
 		DoTurboMode(ctx);
+		WidgetUpdate(ctx);
+	}
+	
+	public static void WidgetUpdate(Context ctx)
+	{
 		RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.turbo_widget);
 		TurboWidgetUpdate(ctx.getApplicationContext(), remoteViews);
 	}
 	
 	public static void TurboWidgetUpdate(Context ctx, RemoteViews rViews)
 	{
-		int imgid;
+		int imgid = R.drawable.turbo;
 		switch ( TurboMode(ctx) ) {
 		case 1:
 			imgid = R.drawable.turboon;
 			break;
-		default:
+		case 0:
 			imgid = R.drawable.turbooff;
+			break;
 		}
 
 		rViews.setImageViewResource(R.id.turbowidget_icon , imgid);
@@ -39,14 +45,16 @@ public class TurboUtils
 	public static int TurboMode(Context ctx)
 	{
 		SharedPreferences pref = ctx.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
-		return pref.getInt("mode", 0);
+		return pref.getInt("mode", -1);
 	}
 	
 	public static void DoTurboMode(Context ctx)
 	{
 		SharedPreferences pref = ctx.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
-		int mode = pref.getInt("mode", 0);
-
+		int mode = pref.getInt("mode", -1);
+		if (mode == -1) {
+			return;
+		}
 		KernelUtils oc = KernelUtils.getInstance();
 		Editor editor = pref.edit();
 		if ( mode == 0 ) {
