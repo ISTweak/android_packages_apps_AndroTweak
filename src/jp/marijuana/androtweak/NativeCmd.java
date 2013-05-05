@@ -75,6 +75,22 @@ public class NativeCmd
 		su = true;
 	}
 	
+	private String getCmdPath(String cmd)
+	{
+		if ( fileExists("/data/root/bin/" + cmd) ) {
+			return "/data/root/bin/" + cmd;
+		} else if ( fileExists("/data/local/bin/" + cmd) ) {
+			return "/data/local/bin/" + cmd;
+		} else if ( fileExists("/system/xbin/" + cmd) ) {
+			return "/system/xbin/" + cmd;
+		} else if ( fileExists("/sbin/" + cmd) ) {
+			return "/sbin/" + cmd;
+		} else if ( fileExists("/system/bin/" + cmd) ) {
+			return "/system/bin/" + cmd;
+		}
+		return cmd;
+	}
+	
 	private static class StreamGobbler extends Thread
 	{
 		InputStream is;
@@ -103,21 +119,46 @@ public class NativeCmd
 			pw.flush();
 		}
 	}	
-
-	private String getCmdPath(String cmd)
+	
+	private static final class CommandRunner extends Thread
 	{
-		if ( fileExists("/data/root/bin/" + cmd) ) {
-			return "/data/root/bin/" + cmd;
-		} else if ( fileExists("/data/local/bin/" + cmd) ) {
-			return "/data/local/bin/" + cmd;
-		} else if ( fileExists("/system/xbin/" + cmd) ) {
-			return "/system/xbin/" + cmd;
-		} else if ( fileExists("/sbin/" + cmd) ) {
-			return "/sbin/" + cmd;
+		private String shell;
+		private String[] commands;
+		private Process exec;
+		
+		public CommandRunner(String[] cmds, String shell)
+		{
+			this.shell = shell;
+			this.commands = cmds;
 		}
-		return cmd;
-	}
 
+		@Override
+		public void run()
+		{
+			try {
+				exec = Runtime.getRuntime().exec(shell);
+				OutputStream os = exec.getOutputStream();
+				String cmd = "";
+				for (int i = 0; i < commands.length; i++) {
+					cmd = commands[i] + "\n\n";
+					os.write(cmd.getBytes());
+				}
+				os.close();
+				exec.waitFor();
+			} catch (Exception e) {
+				Log.e(TAG, e.toString());
+			} finally {
+				destroy();
+			}
+		}
+		
+		public synchronized void destroy()
+		{
+			if (exec != null) exec.destroy();
+			exec = null;
+		}
+	}
+	
 	/**
 	 * ファイル（ディレクト）の存在チェック
 	 * @param String fn
@@ -266,19 +307,17 @@ public class NativeCmd
 			shell = au;
 		}
 		
+		final CommandRunner cmdrun = new CommandRunner(cmds, shell);
+		cmdrun.start();
 		try {
-			Process proc = Runtime.getRuntime().exec(shell);
-			OutputStream os = proc.getOutputStream();
-			
-			String cmd = "";
-			for (int i = 0; i < cmds.length; i++) {
-				cmd = cmds[i] + "\n\n";
-				os.write(cmd.getBytes());
+			cmdrun.join();
+			if (cmdrun.isAlive()) {
+				cmdrun.interrupt();
+				cmdrun.join(150);
+				cmdrun.destroy();
+				cmdrun.join(50);
 			}
-			os.close();
-		} catch (IOException e) {
-			Log.e(TAG, e.toString());
-		}
+		} catch (InterruptedException ex) {}
 	}
 
  	/**

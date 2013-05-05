@@ -61,26 +61,26 @@ public class RootUtils
 	
 	public static void AuSu(Context ctx)
 	{
-		if (nCmd.fileExists("/sbin/su") == false) {
-			DoEnableSu(ctx);
-		} else if (nCmd.fileExists("/sbin/su")) {
-			DoDisableSu(ctx);
+		if (nCmd.fileExists("/sbin/pu")) {
+			if (nCmd.fileExists("/sbin/su")) {
+				DoDisableSu(ctx);
+			} else if (!nCmd.fileExists("/sbin/su")) {
+				DoEnableSu(ctx);
+			}
 		}
 	}
 	
 	public static void DoEnableSu(Context ctx)
 	{
-		if (nCmd.ExecuteCmdAlert(ctx, "ln -s /sbin/au /sbin/su", true)) {
-			Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.EnableSu), Toast.LENGTH_SHORT ).show();
-			Log.i(TAG, "Enable su");
-		}
+		nCmd.ExecuteCommand("ln -s /sbin/au /sbin/su", true);
+		Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.EnableSu), Toast.LENGTH_SHORT ).show();
+		Log.i(TAG, "Enable su");
 	}
 	
 	public static void DoDisableSu(Context ctx)
 	{
-		if (nCmd.ExecuteCmdAlert(ctx, "rm /sbin/su", true)) {
-			Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.DisableSu), Toast.LENGTH_SHORT ).show();
-			Log.i(TAG, "Disable su");
-		}
+		nCmd.ExecuteCommand("rm /sbin/su", true);
+		Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.DisableSu), Toast.LENGTH_SHORT ).show();
+		Log.i(TAG, "Disable su");
 	}
 }
