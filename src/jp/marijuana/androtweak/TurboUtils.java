@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class TurboUtils
 {
@@ -64,13 +65,15 @@ public class TurboUtils
 					 pref.getString("tb_scheduler", oc.def_scheduler),
 					 pref.getString("tb_governor", oc.def_governor)
 			);
+			Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.tst_TurboModeE), Toast.LENGTH_SHORT ).show();
 		} else {
 			editor.putInt("mode", 0);
 			TurboSet(pref.getInt("nr_clock_min", oc.def_minclock),
 					 pref.getInt("nr_clock_max", oc.def_maxclock),
 					 pref.getString("nr_scheduler", oc.def_scheduler),
 					 pref.getString("nr_governor", oc.def_governor)
-			);				
+			);
+			Toast.makeText(ctx.getApplicationContext(), ctx.getString(R.string.tst_TurboModeD), Toast.LENGTH_SHORT ).show();
 		}
 		editor.commit();
 	}

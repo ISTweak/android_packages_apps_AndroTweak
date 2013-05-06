@@ -29,8 +29,10 @@
     <string name="msg_SaveVDD">VDDの設定を保存しました</string>
     <string name="msg_DelVDD">VDDの設定を削除しました</string>
     <string name="msg_SaveZram">Zramは再起動後に反映されます</string>
-    <string name="btn_TurboMode">ターボモード</string>
+    <string name="btn_TurboMode">ターボモードの設定</string>
     <string name="lbl_TurboMode">ターボモード時の設定</string>
+    <string name="tst_TurboModeE">ターボモードを有効にしました</string>
+    <string name="tst_TurboModeD">ターボモードを無効にしました</string>
 	
 	<string name="id_MinClock">1</string>
 	<string name="id_MaxClock">2</string>

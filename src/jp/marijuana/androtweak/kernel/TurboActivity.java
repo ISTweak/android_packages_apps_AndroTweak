@@ -27,8 +27,7 @@ import android.widget.Toast;
 
 public class TurboActivity  extends Activity
 {
-	//private final String TAG = AndroTweakActivity.TAG;
-	private KernelUtils oc;
+	private final KernelUtils oc = KernelUtils.getInstance();
 	private final TableRow.LayoutParams trlp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
 	private TableLayout layout;
 	private SharedPreferences pref;
@@ -39,7 +38,6 @@ public class TurboActivity  extends Activity
 		super.onCreate(savedInstanceState);
 		layout = new TableLayout(this);
 		layout.setOrientation(TableLayout.VERTICAL);
-		oc = KernelUtils.getInstance();
 
 		pref = this.getSharedPreferences("turbo_mode", Context.MODE_PRIVATE);
 		

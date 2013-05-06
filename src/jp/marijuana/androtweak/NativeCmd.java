@@ -32,7 +32,7 @@ public class NativeCmd
 	public Boolean su = false;
 
 	private final static String TAG = AndroTweakActivity.TAG;
-	private static NativeCmd instance = new NativeCmd();
+	private final static NativeCmd instance = new NativeCmd();
 	
 	public static NativeCmd getInstance()
 	{
