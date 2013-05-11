@@ -78,14 +78,19 @@ public class NativeCmd
 	private String getCmdPath(String cmd)
 	{
 		if ( fileExists("/data/root/bin/" + cmd) ) {
+			Log.d(TAG, "/data/root/bin/" + cmd);
 			return "/data/root/bin/" + cmd;
 		} else if ( fileExists("/data/local/bin/" + cmd) ) {
+			Log.d(TAG, "/data/local/bin/" + cmd);
 			return "/data/local/bin/" + cmd;
 		} else if ( fileExists("/system/xbin/" + cmd) ) {
+			Log.d(TAG, "/system/xbin/" + cmd);
 			return "/system/xbin/" + cmd;
 		} else if ( fileExists("/sbin/" + cmd) ) {
+			Log.d(TAG, "/sbin/" + cmd);
 			return "/sbin/" + cmd;
 		} else if ( fileExists("/system/bin/" + cmd) ) {
+			Log.d(TAG, "/system/bin/" + cmd);
 			return "/system/bin/" + cmd;
 		}
 		return cmd;

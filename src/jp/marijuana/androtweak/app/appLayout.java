@@ -2,6 +2,7 @@ package jp.marijuana.androtweak.app;
 
 import java.text.DecimalFormat;
 
+import jp.marijuana.androtweak.AndroTweakActivity;
 import jp.marijuana.androtweak.NativeCmd;
 import jp.marijuana.androtweak.R;
 import android.app.ProgressDialog;
@@ -10,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StatFs;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -20,7 +22,7 @@ public class appLayout implements Runnable
 {
 	private static Context ctx;
 	private static appLayout my;
-	
+	private static final String TAG = AndroTweakActivity.TAG;
 	private static LinearLayout layout;
 	private TableLayout tb;
 	private final TableRow.LayoutParams trlp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
@@ -59,7 +61,6 @@ public class appLayout implements Runnable
 		double demp = emp / 1024d / 1024d;
 		double duse = dall - demp;
 		DecimalFormat df = new DecimalFormat("0.00");
-		
 		double dataapp = DirectorySize(data + "/app") / 1024d;
 		double datadata = DirectorySize(data + "/data") / 1024d;
 		
@@ -71,7 +72,8 @@ public class appLayout implements Runnable
 		setTableRow(R.string.lbl_dataempty, df.format(demp) + "MB");
 		setTableRow(R.string.lbl_dataapp, df.format(dataapp) + "MB");
 		setTableRow(R.string.lbl_datadata, df.format(datadata) + "MB");
-
+		
+		Log.i(TAG, "Get data size");
  		layout.addView(tb);
 	}
 	

@@ -6,6 +6,7 @@ package jp.marijuana.androtweak.utils;
 import java.io.File;
 import java.util.ArrayList;
 
+import jp.marijuana.androtweak.AndroTweakActivity;
 import jp.marijuana.androtweak.R;
 import jp.marijuana.androtweak.NativeCmd;
 
@@ -86,7 +87,13 @@ public class Reboot
 	
 	public void DoRebootRec()
 	{
-		ExecuteReboot("recovery");
+		if (AndroTweakActivity.Model.equals("IS12S")) {
+			NativeCmd nCmd = NativeCmd.getInstance();
+			nCmd.ExecuteCommand("touch /cache/recovery/boot", true);
+			ExecuteReboot("");
+		} else {
+			ExecuteReboot("recovery");
+		}
 	}
 	
 	private void ExecuteReboot(String arg)
