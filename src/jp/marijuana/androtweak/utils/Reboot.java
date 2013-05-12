@@ -24,6 +24,8 @@ public class Reboot
 {
 	private Context ctx;
 	private AlertDialog mDlg = null;
+	private final NativeCmd nCmd = NativeCmd.getInstance();
+	private int[] types = {0, 0, 0};
 	
 	public static Button getButton(Context c)
 	{
@@ -53,9 +55,18 @@ public class Reboot
 	
 	private void showRebootList()
 	{
+		int i = 0;
 		final ArrayList<String> rows = new ArrayList<String>();
 		rows.add(ctx.getString(R.string.RebootNormal));
-		rows.add(ctx.getString(R.string.RebootRecovery));
+		types[i++] = 1;
+		if (!AndroTweakActivity.Model.equals("IS12S")) {
+			rows.add(ctx.getString(R.string.RebootRecovery));
+			types[i++] = 2;
+		}
+		if (nCmd.getProperties("androtweak.cwm").equals("1")) {
+			rows.add(ctx.getString(R.string.RebootCWM));
+			types[i++] = 3;
+		}
 		
 		ListView lv = new ListView(ctx);
 		lv.setAdapter(new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1  , rows));
@@ -65,9 +76,10 @@ public class Reboot
 			public void onItemClick(AdapterView<?> items, View view, int position, long id)
 			{
 				mDlg.dismiss();
-				switch (position) {
-					case 0: DoReboot(); break;
-					case 1: DoRebootRec(); break;
+				switch (types[position]) {
+					case 1: DoReboot(); break;
+					case 2: DoRebootRec(); break;
+					case 3: DoRebootCwm(); break;
 				}
 			}
 		});
@@ -87,20 +99,18 @@ public class Reboot
 	
 	public void DoRebootRec()
 	{
-		if (AndroTweakActivity.Model.equals("IS12S")) {
-			NativeCmd nCmd = NativeCmd.getInstance();
-			nCmd.ExecuteCommand("touch /cache/recovery/boot", true);
-			ExecuteReboot("");
-		} else {
-			ExecuteReboot("recovery");
-		}
+		ExecuteReboot("recovery");
+	}
+	
+	public void DoRebootCwm()
+	{
+		nCmd.ExecuteCommand("touch /cache/recovery/boot", true);
+		ExecuteReboot("");
 	}
 	
 	private void ExecuteReboot(String arg)
 	{
-		NativeCmd nCmd = NativeCmd.getInstance();
 		File ff = new File(ctx.getDir("bin", 0), "reboot");
 		nCmd.ExecuteCommand(ff.getAbsolutePath() + " " + arg, true);
-		
 	}
 }

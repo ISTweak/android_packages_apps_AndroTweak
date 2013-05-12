@@ -50,6 +50,7 @@
     <string name="btn_Reboot">Reboot</string>
     <string name="RebootNormal">Boot</string>
 	<string name="RebootRecovery">Recovery</string>
+	<string name="RebootCWM">CWM on boot</string>
 	<string name="RebootMode">Reboot mode</string>
 	<string name="btn_CacheClear">Cache clear</string>
 	<string name="CACHE_CLEAR">Cache clear</string>

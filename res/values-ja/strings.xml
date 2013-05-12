@@ -52,6 +52,7 @@
     <string name="btn_Reboot">再起動</string>
     <string name="RebootNormal">Boot</string>
 	<string name="RebootRecovery">Recovery</string>
+	<string name="RebootCWM">CWM on boot</string>
 	<string name="RebootMode">再起動モード</string>
 	<string name="btn_CacheClear">キャッシュクリア</string>
 	<string name="CACHE_CLEAR">キャッシュクリア</string>
