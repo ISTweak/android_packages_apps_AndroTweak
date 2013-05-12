@@ -6,7 +6,6 @@ package jp.marijuana.androtweak.utils;
 import java.io.File;
 import java.util.ArrayList;
 
-import jp.marijuana.androtweak.AndroTweakActivity;
 import jp.marijuana.androtweak.R;
 import jp.marijuana.androtweak.NativeCmd;
 
@@ -59,7 +58,7 @@ public class Reboot
 		final ArrayList<String> rows = new ArrayList<String>();
 		rows.add(ctx.getString(R.string.RebootNormal));
 		types[i++] = 1;
-		if (!AndroTweakActivity.Model.equals("IS12S")) {
+		if (!nCmd.getProperties("androtweak.norecovery").equals("1")) {
 			rows.add(ctx.getString(R.string.RebootRecovery));
 			types[i++] = 2;
 		}
@@ -104,7 +103,8 @@ public class Reboot
 	
 	public void DoRebootCwm()
 	{
-		nCmd.ExecuteCommand("touch /cache/recovery/boot", true);
+		String[] cmds = {nCmd.cmdTouch + " /cache/recovery/boot", "sync"};
+		nCmd.ExecuteCommands(cmds, true);
 		ExecuteReboot("");
 	}
 	

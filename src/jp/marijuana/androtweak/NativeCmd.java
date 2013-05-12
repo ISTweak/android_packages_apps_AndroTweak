@@ -28,6 +28,7 @@ public class NativeCmd
 	public String cmdPareL = "[";
 	public String cmdPareR = "]";
 	public String cmdDu = "du";
+	public String cmdTouch = "touch";
 	public Boolean ChangeAu = false;
 	public Boolean su = false;
 
@@ -49,6 +50,7 @@ public class NativeCmd
 		cmdPareL = getCmdPath("[");
 		cmdPareR = getCmdPath("]");
 		cmdDu = getCmdPath("du");
+		cmdTouch = getCmdPath("touch");
 	}
 	
 	private void checkSuCmd()
