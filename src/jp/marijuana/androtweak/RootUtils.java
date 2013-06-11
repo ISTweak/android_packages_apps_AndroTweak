@@ -61,7 +61,7 @@ public class RootUtils
 	
 	public static void AuSu(Context ctx)
 	{
-		if (nCmd.fileExists("/sbin/pu")) {
+		if (nCmd.fileExists("/sbin/au")) {
 			if (nCmd.fileExists("/sbin/su")) {
 				DoDisableSu(ctx);
 			} else if (!nCmd.fileExists("/sbin/su")) {

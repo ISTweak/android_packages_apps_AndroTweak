@@ -103,6 +103,7 @@ public class AppDetailsActivity  extends Activity implements Runnable
 				intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
 				intent.setData(Uri.parse("package:" + appName));
 				startActivity(intent);
+				setResult(1);
 				finish();
 			}
 		});
