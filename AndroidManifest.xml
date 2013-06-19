@@ -1,84 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="jp.marijuana.androtweak"
-    android:versionCode="44"
-    android:versionName="0.4.4" >
+	package="jp.marijuana.androtweak"
+		android:versionCode="45"
+		android:versionName="0.4.5" >
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8" />
+	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name="jp.marijuana.androtweak.AndroTweakActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        
- 		<activity android:name="jp.marijuana.androtweak.app.AppListActivity"></activity>
- 		<activity android:name="jp.marijuana.androtweak.app.AppDetailsActivity"></activity>
-
- 		<activity android:name="jp.marijuana.androtweak.kernel.OrverClockActivity"></activity>
- 		<activity android:name="jp.marijuana.androtweak.kernel.ZramActivity"></activity>
- 		<activity android:name="jp.marijuana.androtweak.kernel.VddActivity"></activity>
- 		<activity android:name="jp.marijuana.androtweak.kernel.TurboActivity"></activity>
-
- 		<receiver android:name="jp.marijuana.androtweak.RootSwitchWidgetProvider" android:label="@string/lbl_rootswitch"  android:process=":remote" android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+	<application
+		android:allowBackup="true"
+		android:icon="@drawable/ic_launcher"
+		android:label="@string/app_name"
+		android:theme="@style/AppTheme" >
+		<activity android:name="jp.marijuana.androtweak.AndroTweakActivity" android:label="@string/app_name" >
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/appwidget" />
-        </receiver>
-        <service android:name="jp.marijuana.androtweak.RootSwitchWidgetProvider$RootSwitchService" android:process=":remote" android:exported="false">
-            <intent-filter>
-                <action android:name="jp.marijuana.androtweak.CHANGE" />
-            </intent-filter>
-        </service>
-        
-        <receiver android:name="jp.marijuana.androtweak.TurboSwitchProvider" android:label="@string/lbl_turboswitch"  android:process=":remote" android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		</activity>
+
+		<activity android:name="jp.marijuana.androtweak.app.AppListActivity"></activity>
+		<activity android:name="jp.marijuana.androtweak.app.AppDetailsActivity"></activity>
+
+		<activity android:name="jp.marijuana.androtweak.kernel.OrverClockActivity"></activity>
+		<activity android:name="jp.marijuana.androtweak.kernel.ZramActivity"></activity>
+		<activity android:name="jp.marijuana.androtweak.kernel.VddActivity"></activity>
+		<activity android:name="jp.marijuana.androtweak.kernel.TurboActivity"></activity>
+
+		<receiver android:name="jp.marijuana.androtweak.RootSwitchWidgetProvider" android:label="@string/lbl_rootswitch"  android:process=":remote" android:exported="false">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 			</intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/turbowidget" />
-        </receiver>
-        <service android:name="jp.marijuana.androtweak.TurboSwitchProvider$TurboSwitchService" android:process=":remote" android:exported="false">
-            <intent-filter>
-                <action android:name="jp.marijuana.androtweak.TURBO" />
-            </intent-filter>
-        </service>
-        
+			<meta-data android:name="android.appwidget.provider" android:resource="@xml/appwidget" />
+		</receiver>
+		<service android:name="jp.marijuana.androtweak.RootSwitchWidgetProvider$RootSwitchService" android:process=":remote" android:exported="false">
+			<intent-filter>
+				<action android:name="jp.marijuana.androtweak.CHANGE" />
+			</intent-filter>
+		</service>
+
+		<receiver android:name="jp.marijuana.androtweak.TurboSwitchProvider" android:label="@string/lbl_turboswitch"  android:process=":remote" android:exported="false">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider" android:resource="@xml/turbowidget" />
+		</receiver>
+		<service android:name="jp.marijuana.androtweak.TurboSwitchProvider$TurboSwitchService" android:process=":remote" android:exported="false">
+			<intent-filter>
+				<action android:name="jp.marijuana.androtweak.TURBO" />
+			</intent-filter>
+		</service>
+
 		<receiver android:name="jp.marijuana.androtweak.AdbSwitchWidgetProvider" android:label="@string/lbl_adbswitch"  android:process=":remote" android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 			</intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/adbwidget" />
-        </receiver>
+			<meta-data android:name="android.appwidget.provider" android:resource="@xml/adbwidget" />
+		</receiver>
 		<service android:name="jp.marijuana.androtweak.AdbSwitchWidgetProvider$AdbSwitchService" android:process=":remote" android:exported="false">
-            <intent-filter>
-                <action android:name="jp.marijuana.androtweak.ADBWIFI" />
-            </intent-filter>
-        </service>
-        
-        <receiver android:enabled="true" android:name="jp.marijuana.androtweak.ChangeWifi" android:permission="android.permission.ACCESS_WIFI_STATE">
-        	<intent-filter>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-        
-        <receiver android:enabled="true" android:name="jp.marijuana.androtweak.autostart" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+			<intent-filter>
+				<action android:name="jp.marijuana.androtweak.ADBWIFI" />
+			</intent-filter>
+		</service>
+
+		<receiver android:enabled="true" android:name="jp.marijuana.androtweak.ChangeWifi" android:permission="android.permission.ACCESS_WIFI_STATE">
+			<intent-filter>
+				<action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+			</intent-filter>
+		</receiver>
+
+		<receiver android:enabled="true" android:name="jp.marijuana.androtweak.autostart" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</receiver>
-    </application>
-
+</application>
 </manifest>
