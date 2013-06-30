@@ -34,9 +34,10 @@ public class RootSwitchWidgetProvider extends AppWidgetProvider
 			RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.root_widget);
 			remoteViews.setOnClickPendingIntent(R.id.rootwidget_icon, pendingIntent);
 			
-			String act = intent.getAction().toString();
-			if (MSG_CHANGE.equals(act)) {
-				RootUtils.AuSu(this);
+			if ( intent != null && intent.getAction() != null ) {
+				if (MSG_CHANGE.equals(intent.getAction())) {
+					RootUtils.AuSu(this);
+				}
 			}
 
 			RootUtils.WidgetUpdate(this, remoteViews);

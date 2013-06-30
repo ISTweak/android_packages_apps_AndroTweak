@@ -44,9 +44,10 @@ public class TurboSwitchProvider extends AppWidgetProvider
 			RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.turbo_widget);
 			remoteViews.setOnClickPendingIntent(R.id.turbowidget_icon, pendingIntent);
 			
-			String act = intent.getAction().toString();
-			if (MSG_CHANGE.equals(act)) {
-				TurboUtils.DoTurboMode(this);
+			if ( intent != null && intent.getAction() != null ) {
+				if (MSG_CHANGE.equals(intent.getAction())) {
+					TurboUtils.DoTurboMode(this);
+				}
 			}
 
 			TurboUtils.TurboWidgetUpdate(this, remoteViews);

@@ -34,9 +34,10 @@ public class AdbSwitchWidgetProvider extends AppWidgetProvider
 			RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.adb_widget);
 			remoteViews.setOnClickPendingIntent(R.id.adbwidget_icon, pendingIntent);
 
-			String act = buttonIntent.getAction().toString();
-			if (MSG_CHANGE.equals(act)) {
-				AdbUtils.DoAdbChange(this);
+			if ( intent != null && intent.getAction() != null ) {
+				if (MSG_CHANGE.equals(intent.getAction())) {
+					AdbUtils.DoAdbChange(this);
+				}
 			}
 			
 		    try {
