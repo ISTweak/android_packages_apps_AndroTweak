@@ -31,6 +31,8 @@
     <string name="msg_SaveZram">Zram is reflected after a reboot.</string>
     <string name="btn_TurboMode">Turbo mode</string>
     <string name="lbl_TurboMode">Setting Turbo mode</string>
+    <string name="tst_TurboModeE">Turbo mode is enabled</string>
+    <string name="tst_TurboModeD">Turbo mode is disabled</string>
 	
 	<string name="id_MinClock">1</string>
 	<string name="id_MaxClock">2</string>
@@ -104,5 +106,7 @@
 	<string name="msg_Loading">Setup &#8230;</string>
 	<string name="msg_Executing">Executing &#8230;</string>
     
+	<string name="menu_Close">Close</string>
+	<string name="menu_Update">Update binary</string>
     
 </resources>
