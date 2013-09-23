@@ -261,7 +261,7 @@ public class NativeCmd
 	public String getCat(String fn)
 	{
 		String[] ret = new String[3];
-		ret = ExecCommand("cat " + fn, false);
+		ret = ExecCommand("cat " + fn, true);
 		if ( ret[1].length() > 0 ) {
 			return  ret[1].trim().replace("\n", "");
 		}
